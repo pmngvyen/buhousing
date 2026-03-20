@@ -590,9 +590,14 @@ function render() {
           const fp=u.floorplan?`<a class="fp" href="${u.floorplan.trim()}" target="_blank">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             Floorplan</a>`:'';
+          // If room label is just a single letter (e.g. "A", "B"), build a combined label
+          // e.g. suite "0315" + room "A" → "315-A", suite "B-01" + room "A" → "B-01A"
+          const roomLabel = /^[A-Za-z]$/.test(r.room.trim())
+            ? u.suite.replace(/^0+/, '').replace(/-$/, '') + '-' + r.room.trim().toUpperCase()
+            : r.room.replace(/^0+/, '') || r.room;
           return `<div class="card">
             <div class="card-top">
-              <div class="room-num">${r.room}</div>
+              <div class="room-num">${roomLabel}</div>
               <div class="avail">${r.availableSpaces}/${r.totalSpaces}</div>
             </div>
             <div class="floor">${floorLabel(u.floor)}</div>
