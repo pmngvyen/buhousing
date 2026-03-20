@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BU Housing · Bay State Road</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red:       #cc0000;
+    --red-hover: #b30000;
+    --red-dim:   rgba(204,0,0,0.08);
+    --red-pale:  #fff5f5;
+    --red-mid:   #a80000;
+    --white:     #ffffff;
+    --bg:        #f5f5f5;
+    --surface:   #ffffff;
+    --gray1:     #f0f0f0;
+    --gray2:     #e2e2e2;
+    --gray3:     #c8c8c8;
+    --ink:       #0f0f0f;
+    --ink2:      #3d3d3d;
+    --ink3:      #7a7a7a;
+    --ink4:      #aaaaaa;
+    --sans:      'Inter', system-ui, sans-serif;
+    --r:         6px;
+    --r-lg:      10px;
+    --transition: 0.12s ease;
+  }
+
+  body { font-family: var(--sans); background: var(--bg); color: var(--ink); min-height: 100vh; font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--red);
+    height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    gap: 0;
+  }
+
+  .logo {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.02em;
+    margin-right: 20px;
+    padding-right: 20px;
+    border-right: 1px solid rgba(255,255,255,0.2);
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: -0.01em;
+  }
+
+  .header-title span {
+    color: rgba(255,255,255,0.45);
+    margin: 0 6px;
+    font-weight: 300;
+  }
+
+  .header-stats {
+    margin-left: auto;
+    display: flex;
+    gap: 6px;
+  }
+
+  .hstat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--r);
+    padding: 6px 14px;
+    min-width: 64px;
+  }
+
+  .hstat-num {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .hstat-lbl {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-top: 3px;
+  }
+
+  /* ── FILTER BAR ── */
+  .bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--gray2);
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 1px 12px rgba(0,0,0,0.05);
+  }
+
+  .bar-sep { width: 1px; height: 20px; background: var(--gray2); flex-shrink: 0; margin: 0 4px; }
+
+  .bar-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink4);
+    flex-shrink: 0;
+  }
+
+  .chip {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 100px;
+    border: 1px solid var(--gray2);
+    background: transparent;
+    color: var(--ink3);
+    cursor: pointer;
+    transition: all var(--transition);
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+  }
+
+  .chip:hover { border-color: var(--red); color: var(--red); }
+  .chip.on { background: var(--red); color: var(--white); border-color: var(--red); }
+
+  #search {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 400;
+    padding: 5px 11px;
+    border: 1px solid var(--gray2);
+    border-radius: var(--r);
+    background: var(--bg);
+    color: var(--ink);
+    outline: none;
+    width: 190px;
+    transition: border-color var(--transition);
+    letter-spacing: -0.01em;
+  }
+
+  #search::placeholder { color: var(--ink4); }
+  #search:focus { border-color: var(--red); background: var(--white); }
+
+  #refreshBtn {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: var(--r);
+    border: 1px solid var(--gray2);
+    background: transparent;
+    color: var(--ink3);
+    cursor: pointer;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto;
+    letter-spacing: -0.01em;
+  }
+
+  #refreshBtn:hover { border-color: var(--red); color: var(--red); }
+  #refreshBtn:disabled { opacity: 0.3; cursor: default; }
+
+  /* ── MAIN ── */
+  main { padding: 28px 40px 80px; max-width: 1160px; margin: 0 auto; }
+
+  /* ── STATUS ── */
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    font-size: 12px;
+    color: var(--ink3);
+  }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .dot.loading { background: #d4a000; animation: pulse 1s ease-in-out infinite; }
+  .dot.live    { background: #1a8a38; animation: pulse 3s ease-in-out infinite; }
+  .dot.error   { background: var(--red); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+  #count { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--red); }
+
+  /* ── BUILDING GROUP ── */
+  .bld { margin-bottom: 32px; }
+
+  .bld-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .bld-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+
+  .bld-count {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--red-mid);
+    background: var(--red-pale);
+    border: 1px solid rgba(204,0,0,0.1);
+    padding: 1px 8px;
+    border-radius: 100px;
+  }
+
+  .bld-line {
+    flex: 1;
+    height: 1px;
+    background: var(--gray2);
+  }
+
+  /* ── GRID ── */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--gray2);
+    border-radius: var(--r-lg);
+    padding: 16px;
+    position: relative;
+    transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+  }
+
+  .card:hover {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px var(--red-dim), 0 4px 16px rgba(0,0,0,0.06);
+    transform: translateY(-1px);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .room-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .avail {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 7px;
+    border-radius: 100px;
+    background: var(--red-pale);
+    color: var(--red-mid);
+    border: 1px solid rgba(204,0,0,0.1);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .floor {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--ink4);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .tags { display: flex; gap: 4px; flex-wrap: wrap; }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  .t-single { background: #e6f4ed; color: #15653a; }
+  .t-double { background: #fef7e0; color: #8a6200; }
+  .t-triple { background: var(--red-pale); color: var(--red-mid); }
+  .t-male   { background: #e8eef8; color: #1d4080; }
+  .t-type   { background: var(--gray1); color: var(--ink3); }
+
+  .card-footer {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--gray1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .rate {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+
+  .meal {
+    font-size: 10px;
+    color: var(--ink4);
+    font-weight: 400;
+  }
+
+  .fp {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--red);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    transition: opacity var(--transition);
+  }
+  .fp:hover { opacity: 0.65; }
+
+  /* ── EMPTY ── */
+  .empty { text-align: center; padding: 80px 20px; }
+  .empty-ico { width: 48px; height: 48px; background: var(--red-pale); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+  .empty-ico svg { width: 22px; height: 22px; stroke: var(--red); }
+  .empty h3 { font-size: 16px; font-weight: 600; color: var(--ink2); margin-bottom: 6px; letter-spacing: -0.02em; }
+  .empty p { font-size: 13px; color: var(--ink3); line-height: 1.6; }
+  .empty a { color: var(--red); }
+
+  /* ── SKELETON ── */
+  .skel { background: var(--surface); border: 1px solid var(--gray2); border-radius: var(--r-lg); padding: 16px; }
+  .sl { height: 9px; border-radius: 4px; margin-bottom: 8px; background: linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%); background-size: 200% 100%; animation: sh 1.4s ease-in-out infinite; }
+  @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  /* ── FOOTER ── */
+  .footer { text-align: center; font-size: 11px; color: var(--ink4); margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--gray2); line-height: 1.8; letter-spacing: -0.01em; }
+  .footer a { color: var(--red); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  @media(max-width: 640px) {
+    header { padding: 0 20px; height: auto; min-height: 56px; flex-wrap: wrap; padding-top: 12px; padding-bottom: 12px; }
+    .header-stats { display: none; }
+    .bar { padding: 0 16px; height: auto; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; gap: 6px; }
+    main { padding: 20px 16px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">BU</div>
+  <div class="header-title">
+    Housing<span>/</span>Bay State Road<span>/</span>Room Selection 2026–27
+  </div>
+  <div class="header-stats">
+    <div class="hstat"><div class="hstat-num" id="hMale">—</div><div class="hstat-lbl">Male</div></div>
+    <div class="hstat"><div class="hstat-num" id="hSingle">—</div><div class="hstat-lbl">Singles</div></div>
+    <div class="hstat"><div class="hstat-num" id="hDouble">—</div><div class="hstat-lbl">Doubles</div></div>
+    <div class="hstat"><div class="hstat-num" id="hTriple">—</div><div class="hstat-lbl">Triples</div></div>
+  </div>
+</header>
+
+<div class="bar">
+  <span class="bar-label">Type</span>
+  <button class="chip on" onclick="toggle(this,'Single')">Single</button>
+  <button class="chip on" onclick="toggle(this,'Double')">Double</button>
+  <button class="chip on" onclick="toggle(this,'Triple')">Triple</button>
+  <div class="bar-sep"></div>
+  <span class="bar-label">Sort</span>
+  <button class="chip" id="sortBtn" onclick="cycleSort()">Building</button>
+  <div class="bar-sep"></div>
+  <input id="search" type="text" placeholder="Search building or room…" oninput="render()">
+  <button id="refreshBtn" onclick="load()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+    Refresh
+  </button>
+</div>
+
+<main>
+  <div class="status">
+    <div class="dot loading" id="dot"></div>
+    <span id="statusText">Loading…</span>
+    <span id="count"></span>
+  </div>
+  <div id="container"></div>
+  <div class="footer" id="footer"></div>
+</main>
+
+<script>
+const API = 'https://www.bu.edu/housing/wp-admin/admin-ajax.php?action=bu_hau_units_data&timestamp=';
+const PROXIES = [
+  u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+];
+
+// Only show buildings 90–212 Bay State Road
+function inRange(location) {
+  const m = location.match(/^(\d+)(?:-\d+)?\s+Bay State Road/i);
+  if (!m) return false;
+  const n = parseInt(m[1]);
+  return n >= 90 && n <= 212;
+}
+
+let allUnits = [];
+let activeTypes = new Set(['Single','Double','Triple']);
+let sortMode = 'bld'; // bld | rate-asc | rate-desc
+
+function toggle(btn, type) {
+  if (activeTypes.has(type)) {
+    if (activeTypes.size === 1) return;
+    activeTypes.delete(type);
+    btn.classList.remove('on');
+  } else {
+    activeTypes.add(type);
+    btn.classList.add('on');
+  }
+  render();
+}
+
+function cycleSort() {
+  const btn = document.getElementById('sortBtn');
+  if (sortMode === 'bld') {
+    sortMode = 'rate-asc'; btn.textContent = 'Rate ↑'; btn.classList.add('on');
+  } else if (sortMode === 'rate-asc') {
+    sortMode = 'rate-desc'; btn.textContent = 'Rate ↓';
+  } else {
+    sortMode = 'bld'; btn.textContent = 'Building'; btn.classList.remove('on');
+  }
+  render();
+}
+
+function setStatus(state, text) {
+  document.getElementById('dot').className = 'dot ' + state;
+  document.getElementById('statusText').textContent = text;
+}
+
+function showSkeletons() {
+  document.getElementById('container').innerHTML = Array(3).fill(`
+    <div class="bld" style="margin-bottom:32px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div class="sl" style="width:160px;height:12px;margin:0;flex:none"></div>
+        <div style="flex:1;height:1px;background:var(--gray2)"></div>
+      </div>
+      <div class="grid">
+        ${Array(5).fill(`<div class="skel">
+          <div class="sl" style="width:50px;height:20px"></div>
+          <div class="sl" style="width:70px;height:7px"></div>
+          <div class="sl" style="width:110px;height:7px"></div>
+          <div class="sl" style="width:90px;height:7px"></div>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function parseRate(s) { return parseInt((s||'').replace(/[^0-9]/g,'')) || 0; }
+
+function floorLabel(f) {
+  const n = parseInt(f);
+  if (isNaN(n) || n === 0) return 'Basement';
+  const sfx = ['th','st','nd','rd'];
+  const v = n % 100;
+  return n + (sfx[(v-20)%10] || sfx[v] || sfx[0]) + ' floor';
+}
+
+function updateStats(units) {
+  const avail = units.filter(u => u.gender === 'Male' && u.availableSpaces > 0 && inRange(u.location));
+  const ct = t => avail.reduce((a, u) => a + u.rooms.filter(r => r.roomSize === t && r.availableSpaces > 0).length, 0);
+  document.getElementById('hMale').textContent   = avail.length;
+  document.getElementById('hSingle').textContent = ct('Single');
+  document.getElementById('hDouble').textContent = ct('Double');
+  document.getElementById('hTriple').textContent = ct('Triple');
+}
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase();
+  let cards = [];
+
+  allUnits.forEach(u => {
+    if (!inRange(u.location)) return;
+    if (u.gender !== 'Male') return;
+    u.rooms.forEach(r => {
+      if (!activeTypes.has(r.roomSize)) return;
+      if (r.availableSpaces === 0) return;
+      if (q && !u.location.toLowerCase().includes(q) && !r.room.toLowerCase().includes(q)) return;
+      cards.push({ unit: u, room: r });
+    });
+  });
+
+  if (sortMode === 'rate-asc') cards.sort((a,b) => parseRate(a.room.rate) - parseRate(b.room.rate));
+  else if (sortMode === 'rate-desc') cards.sort((a,b) => parseRate(b.room.rate) - parseRate(a.room.rate));
+  else cards.sort((a,b) => {
+    const na = parseInt(a.unit.location.match(/^(\d+)/)?.[1]||0);
+    const nb = parseInt(b.unit.location.match(/^(\d+)/)?.[1]||0);
+    return na - nb;
+  });
+
+  document.getElementById('count').textContent =
+    cards.length + ' room' + (cards.length !== 1 ? 's' : '') + ' available';
+
+  if (cards.length === 0) {
+    document.getElementById('container').innerHTML = `
+      <div class="empty">
+        <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <h3>No rooms found</h3>
+        <p>Try adjusting the type filters or clearing the search.</p>
+      </div>`;
+    return;
+  }
+
+  const byBld = {};
+  cards.forEach(c => {
+    if (!byBld[c.unit.location]) byBld[c.unit.location] = [];
+    byBld[c.unit.location].push(c);
+  });
+
+  document.getElementById('container').innerHTML = Object.entries(byBld).map(([bld, items]) => `
+    <div class="bld">
+      <div class="bld-head">
+        <div class="bld-name">${bld}</div>
+        <div class="bld-count">${items.length} room${items.length !== 1 ? 's' : ''}</div>
+        <div class="bld-line"></div>
+      </div>
+      <div class="grid">
+        ${items.map(({unit: u, room: r}) => {
+          const tc = 't-' + r.roomSize.toLowerCase();
+          const rate = parseRate(r.rate);
+          const rateStr = rate ? '$' + rate.toLocaleString() + '/yr' : '—';
+          const fp = u.floorplan
+            ? `<a class="fp" href="${u.floorplan.trim()}" target="_blank">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Floorplan</a>` : '';
+          return `<div class="card">
+            <div class="card-top">
+              <div class="room-num">${r.room}</div>
+              <div class="avail">${r.availableSpaces}/${r.totalSpaces}</div>
+            </div>
+            <div class="floor">${floorLabel(u.floor)}</div>
+            <div class="tags">
+              <span class="tag ${tc}">${r.roomSize}</span>
+              <span class="tag t-male">Male</span>
+              <span class="tag t-type">${u.unitType}</span>
+            </div>
+            <div class="card-footer">
+              <span class="rate">${rateStr}</span>
+              <span class="meal">${u.mealplan ? 'Meal req.' : 'No meal'}</span>
+            </div>
+            ${fp}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+}
+
+async function fetchWithFallback(url) {
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    if (res.ok) { const d = await res.json(); if (d?.areas) return d; }
+  } catch {}
+  for (const px of PROXIES) {
+    try {
+      const res = await fetch(px(url), { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) continue;
+      const w = await res.json();
+      const raw = w.contents ?? w;
+      const d = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      if (d?.areas) return d;
+    } catch {}
+  }
+  throw new Error('All fetch attempts failed');
+}
+
+async function load() {
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled = true;
+  setStatus('loading', 'Loading live data from BU Housing…');
+  showSkeletons();
+  try {
+    const data = await fetchWithFallback(API + Date.now());
+    const bsr = data.areas.find(a => a.areaID === 'Bay State Rd Dormitories');
+    if (!bsr) throw new Error('Bay State Rd not found in response');
+    allUnits = bsr.units;
+    updateStats(allUnits);
+    const ts = data.createTime || new Date().toLocaleString();
+    setStatus('live', `Live · BU last updated ${ts}`);
+    document.getElementById('footer').innerHTML =
+      `Live data from <a href="https://www.bu.edu/housing/assignments/continuing-student/availability/" target="_blank">BU Housing Availability</a> · ` +
+      `Updated by BU every 5 min · Fetched ${new Date().toLocaleTimeString()}`;
+    render();
+  } catch(e) {
+    setStatus('error', 'Could not load — ' + e.message);
+    document.getElementById('container').innerHTML = `
+      <div class="empty">
+        <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <h3>Failed to load</h3>
+        <p>Click Refresh to try again, or visit the <a href="https://www.bu.edu/housing/assignments/continuing-student/availability/" target="_blank">BU Housing page</a> directly.</p>
+      </div>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+setInterval(load, 5 * 60 * 1000);
+load();
+</script>
+</body>
+</html>
