@@ -3,350 +3,184 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BU Housing · Bay State Road</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700&display=swap" rel="stylesheet">
+<title>BU Housing · Room Availability</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --red:       #cc0000;
-    --red-hover: #b30000;
-    --red-dim:   rgba(204,0,0,0.08);
-    --red-pale:  #fff5f5;
-    --red-mid:   #a80000;
-    --white:     #ffffff;
-    --bg:        #f5f5f5;
-    --surface:   #ffffff;
-    --gray1:     #f0f0f0;
-    --gray2:     #e2e2e2;
-    --gray3:     #c8c8c8;
-    --ink:       #0f0f0f;
-    --ink2:      #3d3d3d;
-    --ink3:      #7a7a7a;
-    --ink4:      #aaaaaa;
-    --sans:      'Inter', system-ui, sans-serif;
-    --r:         6px;
-    --r-lg:      10px;
-    --transition: 0.12s ease;
+    --red:      #cc0000;
+    --red-h:    #b30000;
+    --red-dim:  rgba(204,0,0,0.08);
+    --red-pale: #fff5f5;
+    --red-mid:  #a80000;
+    --white:    #ffffff;
+    --bg:       #f5f5f5;
+    --surface:  #ffffff;
+    --g1:       #f0f0f0;
+    --g2:       #e2e2e2;
+    --g3:       #c8c8c8;
+    --ink:      #0f0f0f;
+    --ink2:     #3d3d3d;
+    --ink3:     #7a7a7a;
+    --ink4:     #aaaaaa;
+    --sans:     'Inter', system-ui, sans-serif;
+    --r:        6px;
+    --r-lg:     10px;
+    --ease:     0.12s ease;
   }
-
-  body { font-family: var(--sans); background: var(--bg); color: var(--ink); min-height: 100vh; font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; }
 
   /* ── HEADER ── */
   header {
+    background: var(--red); height: 56px;
+    display: flex; align-items: center; padding: 0 40px; gap: 0;
+    position: sticky; top: 0; z-index: 200;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.15);
+  }
+  .logo { font-size: 17px; font-weight: 700; color: var(--white); letter-spacing: -0.03em; margin-right: 18px; padding-right: 18px; border-right: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; cursor: pointer; }
+  .logo:hover { opacity: 0.85; }
+  .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.7); min-width: 0; }
+  .breadcrumb .sep { color: rgba(255,255,255,0.3); font-weight: 300; }
+  .breadcrumb .current { color: var(--white); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb .crumb { cursor: pointer; white-space: nowrap; }
+  .breadcrumb .crumb:hover { color: rgba(255,255,255,0.95); }
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+  .hstat { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--r); padding: 5px 12px; min-width: 56px; }
+  .hstat-num { font-size: 16px; font-weight: 700; color: var(--white); line-height: 1; letter-spacing: -0.03em; }
+  .hstat-lbl { font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+  /* ── PAGES ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ══════════════════════════════════
+     HOME PAGE
+  ══════════════════════════════════ */
+  .home-hero {
     background: var(--red);
-    height: 64px;
-    display: flex;
-    align-items: center;
-    padding: 0 40px;
-    gap: 0;
+    padding: 56px 40px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
   }
-
-  .logo {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--white);
-    letter-spacing: -0.02em;
-    margin-right: 20px;
-    padding-right: 20px;
-    border-right: 1px solid rgba(255,255,255,0.2);
-    flex-shrink: 0;
+  .home-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 40px,
+      rgba(255,255,255,0.02) 40px,
+      rgba(255,255,255,0.02) 80px
+    );
+    pointer-events: none;
   }
+  .hero-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 10px; }
+  .hero-title { font-size: clamp(28px, 5vw, 42px); font-weight: 700; color: var(--white); letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 10px; }
+  .hero-sub { font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.65); margin-bottom: 0; letter-spacing: -0.01em; }
 
-  .header-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: rgba(255,255,255,0.85);
-    letter-spacing: -0.01em;
-  }
+  .home-content { max-width: 960px; margin: 0 auto; padding: 40px 40px 80px; }
+  .home-section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink4); margin-bottom: 14px; }
 
-  .header-title span {
-    color: rgba(255,255,255,0.45);
-    margin: 0 6px;
-    font-weight: 300;
-  }
+  .area-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-bottom: 40px; }
 
-  .header-stats {
-    margin-left: auto;
-    display: flex;
-    gap: 6px;
-  }
-
-  .hstat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: var(--r);
-    padding: 6px 14px;
-    min-width: 64px;
-  }
-
-  .hstat-num {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--white);
-    line-height: 1;
-    letter-spacing: -0.03em;
-  }
-
-  .hstat-lbl {
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
-    margin-top: 3px;
-  }
-
-  /* ── FILTER BAR ── */
-  .bar {
+  .area-card {
     background: var(--surface);
-    border-bottom: 1px solid var(--gray2);
-    height: 48px;
-    display: flex;
-    align-items: center;
-    padding: 0 40px;
-    gap: 8px;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    box-shadow: 0 1px 12px rgba(0,0,0,0.05);
-  }
-
-  .bar-sep { width: 1px; height: 20px; background: var(--gray2); flex-shrink: 0; margin: 0 4px; }
-
-  .bar-label {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink4);
-    flex-shrink: 0;
-  }
-
-  .chip {
-    font-family: var(--sans);
-    font-size: 12px;
-    font-weight: 500;
-    padding: 4px 12px;
-    border-radius: 100px;
-    border: 1px solid var(--gray2);
-    background: transparent;
-    color: var(--ink3);
+    border: 1px solid var(--g2);
+    border-radius: var(--r-lg);
+    padding: 20px 22px;
     cursor: pointer;
-    transition: all var(--transition);
-    white-space: nowrap;
-    letter-spacing: -0.01em;
+    transition: border-color var(--ease), box-shadow var(--ease), transform var(--ease);
+    display: flex; align-items: flex-start; gap: 14px;
   }
+  .area-card:hover {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px var(--red-dim), 0 4px 20px rgba(0,0,0,0.07);
+    transform: translateY(-1px);
+  }
+  .area-icon {
+    width: 36px; height: 36px; border-radius: var(--r); flex-shrink: 0;
+    background: var(--red-pale); display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(204,0,0,0.1);
+  }
+  .area-icon svg { width: 18px; height: 18px; stroke: var(--red); }
+  .area-info { flex: 1; min-width: 0; }
+  .area-name { font-size: 14px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 3px; }
+  .area-meta { font-size: 11px; color: var(--ink3); font-weight: 400; letter-spacing: -0.01em; }
+  .area-arrow { color: var(--g3); font-size: 16px; margin-left: auto; align-self: center; transition: color var(--ease), transform var(--ease); flex-shrink: 0; }
+  .area-card:hover .area-arrow { color: var(--red); transform: translateX(2px); }
 
+  .area-card.loading-card { pointer-events: none; }
+  .area-card.loading-card .area-name { color: var(--ink4); }
+
+  /* availability chips on home cards */
+  .avail-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+  .avail-chip { font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 100px; letter-spacing: 0.03em; }
+  .ac-avail { background: #e6f4ed; color: #15653a; }
+  .ac-zero  { background: var(--g1); color: var(--ink4); }
+
+  /* last updated */
+  .home-updated { font-size: 11px; color: var(--ink4); text-align: center; margin-top: 8px; }
+
+  /* ══════════════════════════════════
+     AREA / ROOMS PAGE
+  ══════════════════════════════════ */
+  .bar {
+    background: var(--surface); border-bottom: 1px solid var(--g2);
+    height: 48px; display: flex; align-items: center; padding: 0 40px; gap: 8px;
+    position: sticky; top: 56px; z-index: 100;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+  }
+  .bar-sep { width: 1px; height: 20px; background: var(--g2); flex-shrink: 0; margin: 0 4px; }
+  .bar-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink4); flex-shrink: 0; }
+  .chip { font-family: var(--sans); font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 100px; border: 1px solid var(--g2); background: transparent; color: var(--ink3); cursor: pointer; transition: all var(--ease); white-space: nowrap; letter-spacing: -0.01em; }
   .chip:hover { border-color: var(--red); color: var(--red); }
   .chip.on { background: var(--red); color: var(--white); border-color: var(--red); }
-
-  #search {
-    font-family: var(--sans);
-    font-size: 13px;
-    font-weight: 400;
-    padding: 5px 11px;
-    border: 1px solid var(--gray2);
-    border-radius: var(--r);
-    background: var(--bg);
-    color: var(--ink);
-    outline: none;
-    width: 190px;
-    transition: border-color var(--transition);
-    letter-spacing: -0.01em;
-  }
-
+  #search { font-family: var(--sans); font-size: 13px; font-weight: 400; padding: 5px 11px; border: 1px solid var(--g2); border-radius: var(--r); background: var(--bg); color: var(--ink); outline: none; width: 190px; transition: border-color var(--ease); letter-spacing: -0.01em; }
   #search::placeholder { color: var(--ink4); }
   #search:focus { border-color: var(--red); background: var(--white); }
-
-  #refreshBtn {
-    font-family: var(--sans);
-    font-size: 12px;
-    font-weight: 500;
-    padding: 5px 12px;
-    border-radius: var(--r);
-    border: 1px solid var(--gray2);
-    background: transparent;
-    color: var(--ink3);
-    cursor: pointer;
-    transition: all var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-left: auto;
-    letter-spacing: -0.01em;
-  }
-
+  #refreshBtn { font-family: var(--sans); font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: var(--r); border: 1px solid var(--g2); background: transparent; color: var(--ink3); cursor: pointer; transition: all var(--ease); display: flex; align-items: center; gap: 5px; margin-left: auto; }
   #refreshBtn:hover { border-color: var(--red); color: var(--red); }
   #refreshBtn:disabled { opacity: 0.3; cursor: default; }
 
-  /* ── MAIN ── */
   main { padding: 28px 40px 80px; max-width: 1160px; margin: 0 auto; }
-
-  /* ── STATUS ── */
-  .status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 24px;
-    font-size: 12px;
-    color: var(--ink3);
-  }
-
+  .status { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; font-size: 12px; color: var(--ink3); }
   .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
   .dot.loading { background: #d4a000; animation: pulse 1s ease-in-out infinite; }
   .dot.live    { background: #1a8a38; animation: pulse 3s ease-in-out infinite; }
   .dot.error   { background: var(--red); }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
-
   #count { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--red); }
 
-  /* ── BUILDING GROUP ── */
   .bld { margin-bottom: 32px; }
+  .bld-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .bld-name { font-size: 13px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; }
+  .bld-count { font-size: 11px; font-weight: 500; color: var(--red-mid); background: var(--red-pale); border: 1px solid rgba(204,0,0,0.1); padding: 1px 8px; border-radius: 100px; }
+  .bld-line { flex: 1; height: 1px; background: var(--g2); }
 
-  .bld-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-
-  .bld-name {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ink);
-    letter-spacing: -0.02em;
-  }
-
-  .bld-count {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--red-mid);
-    background: var(--red-pale);
-    border: 1px solid rgba(204,0,0,0.1);
-    padding: 1px 8px;
-    border-radius: 100px;
-  }
-
-  .bld-line {
-    flex: 1;
-    height: 1px;
-    background: var(--gray2);
-  }
-
-  /* ── GRID ── */
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
-
-  /* ── CARD ── */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--gray2);
-    border-radius: var(--r-lg);
-    padding: 16px;
-    position: relative;
-    transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
-  }
-
-  .card:hover {
-    border-color: var(--red);
-    box-shadow: 0 0 0 3px var(--red-dim), 0 4px 16px rgba(0,0,0,0.06);
-    transform: translateY(-1px);
-  }
-
-  .card-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-
-  .room-num {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--ink);
-    letter-spacing: -0.04em;
-    line-height: 1;
-  }
-
-  .avail {
-    font-size: 10px;
-    font-weight: 600;
-    padding: 3px 7px;
-    border-radius: 100px;
-    background: var(--red-pale);
-    color: var(--red-mid);
-    border: 1px solid rgba(204,0,0,0.1);
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .floor {
-    font-size: 10px;
-    font-weight: 500;
-    color: var(--ink4);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
+  .card { background: var(--surface); border: 1px solid var(--g2); border-radius: var(--r-lg); padding: 16px; position: relative; transition: border-color var(--ease), box-shadow var(--ease), transform var(--ease); }
+  .card:hover { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-dim), 0 4px 16px rgba(0,0,0,0.06); transform: translateY(-1px); }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+  .room-num { font-size: 24px; font-weight: 700; color: var(--ink); letter-spacing: -0.04em; line-height: 1; }
+  .avail { font-size: 10px; font-weight: 600; padding: 3px 7px; border-radius: 100px; background: var(--red-pale); color: var(--red-mid); border: 1px solid rgba(204,0,0,0.1); white-space: nowrap; flex-shrink: 0; }
+  .floor { font-size: 10px; font-weight: 500; color: var(--ink4); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
   .tags { display: flex; gap: 4px; flex-wrap: wrap; }
-
-  .tag {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    padding: 2px 7px;
-    border-radius: 4px;
-  }
-
+  .tag { font-size: 10px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; }
   .t-single { background: #e6f4ed; color: #15653a; }
   .t-double { background: #fef7e0; color: #8a6200; }
   .t-triple { background: var(--red-pale); color: var(--red-mid); }
+  .t-quad   { background: #ede8fc; color: #4a2fa0; }
   .t-male   { background: #e8eef8; color: #1d4080; }
-  .t-type   { background: var(--gray1); color: var(--ink3); }
-
-  .card-footer {
-    margin-top: 12px;
-    padding-top: 10px;
-    border-top: 1px solid var(--gray1);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .rate {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--ink);
-    letter-spacing: -0.02em;
-  }
-
-  .meal {
-    font-size: 10px;
-    color: var(--ink4);
-    font-weight: 400;
-  }
-
-  .fp {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    margin-top: 8px;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--red);
-    text-decoration: none;
-    letter-spacing: -0.01em;
-    transition: opacity var(--transition);
-  }
+  .t-female { background: #fce8f3; color: #8c1a5a; }
+  .t-coed   { background: #f0f0f0; color: #555; }
+  .t-type   { background: var(--g1); color: var(--ink3); }
+  .card-footer { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--g1); display: flex; align-items: center; justify-content: space-between; }
+  .rate { font-size: 12px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; }
+  .meal { font-size: 10px; color: var(--ink4); }
+  .fp { display: inline-flex; align-items: center; gap: 3px; margin-top: 8px; font-size: 11px; font-weight: 500; color: var(--red); text-decoration: none; transition: opacity var(--ease); }
   .fp:hover { opacity: 0.65; }
 
-  /* ── EMPTY ── */
   .empty { text-align: center; padding: 80px 20px; }
   .empty-ico { width: 48px; height: 48px; background: var(--red-pale); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
   .empty-ico svg { width: 22px; height: 22px; stroke: var(--red); }
@@ -354,32 +188,33 @@
   .empty p { font-size: 13px; color: var(--ink3); line-height: 1.6; }
   .empty a { color: var(--red); }
 
-  /* ── SKELETON ── */
-  .skel { background: var(--surface); border: 1px solid var(--gray2); border-radius: var(--r-lg); padding: 16px; }
+  .skel { background: var(--surface); border: 1px solid var(--g2); border-radius: var(--r-lg); padding: 16px; }
   .sl { height: 9px; border-radius: 4px; margin-bottom: 8px; background: linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%); background-size: 200% 100%; animation: sh 1.4s ease-in-out infinite; }
   @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-  /* ── FOOTER ── */
-  .footer { text-align: center; font-size: 11px; color: var(--ink4); margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--gray2); line-height: 1.8; letter-spacing: -0.01em; }
+  .footer { text-align: center; font-size: 11px; color: var(--ink4); margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--g2); line-height: 1.8; }
   .footer a { color: var(--red); text-decoration: none; }
   .footer a:hover { text-decoration: underline; }
 
   @media(max-width: 640px) {
-    header { padding: 0 20px; height: auto; min-height: 56px; flex-wrap: wrap; padding-top: 12px; padding-bottom: 12px; }
-    .header-stats { display: none; }
-    .bar { padding: 0 16px; height: auto; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; gap: 6px; }
+    header { padding: 0 16px; }
+    .header-right { display: none; }
+    .home-hero { padding: 36px 20px 32px; }
+    .home-content { padding: 28px 16px 60px; }
+    .bar { padding: 0 16px; height: auto; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
     main { padding: 20px 16px 60px; }
   }
 </style>
 </head>
 <body>
 
+<!-- ── HEADER ── -->
 <header>
-  <div class="logo">BU</div>
-  <div class="header-title">
-    Housing<span>/</span>Bay State Road<span>/</span>Room Selection 2026–27
+  <div class="logo" onclick="goHome()">BU</div>
+  <div class="breadcrumb" id="breadcrumb">
+    <span class="current">Housing Availability</span>
   </div>
-  <div class="header-stats">
+  <div class="header-right" id="headerStats" style="display:none">
     <div class="hstat"><div class="hstat-num" id="hMale">—</div><div class="hstat-lbl">Male</div></div>
     <div class="hstat"><div class="hstat-num" id="hSingle">—</div><div class="hstat-lbl">Singles</div></div>
     <div class="hstat"><div class="hstat-num" id="hDouble">—</div><div class="hstat-lbl">Doubles</div></div>
@@ -387,33 +222,140 @@
   </div>
 </header>
 
-<div class="bar">
-  <span class="bar-label">Type</span>
-  <button class="chip on" onclick="toggle(this,'Single')">Single</button>
-  <button class="chip on" onclick="toggle(this,'Double')">Double</button>
-  <button class="chip on" onclick="toggle(this,'Triple')">Triple</button>
-  <div class="bar-sep"></div>
-  <span class="bar-label">Sort</span>
-  <button class="chip" id="sortBtn" onclick="cycleSort()">Building</button>
-  <div class="bar-sep"></div>
-  <input id="search" type="text" placeholder="Search building or room…" oninput="render()">
-  <button id="refreshBtn" onclick="load()">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-    Refresh
-  </button>
+<!-- ══════════════════════════════════
+     HOME PAGE
+══════════════════════════════════ -->
+<div class="page active" id="page-home">
+  <div class="home-hero">
+    <div class="hero-eyebrow">Boston University · Room Selection 2026–2027</div>
+    <div class="hero-title">Find Your Room</div>
+    <div class="hero-sub">Browse available rooms across all BU housing areas · Male singles, doubles &amp; triples</div>
+  </div>
+  <div class="home-content">
+    <div class="home-section-label" id="homeLabel">Loading areas…</div>
+    <div class="area-grid" id="areaGrid">
+      <!-- skeleton cards -->
+      ${Array(6).fill(`
+        <div class="area-card loading-card">
+          <div class="area-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+          <div class="area-info">
+            <div class="sl" style="width:140px;height:11px;margin-bottom:6px"></div>
+            <div class="sl" style="width:100px;height:8px"></div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="home-updated" id="homeUpdated"></div>
+  </div>
 </div>
 
-<main>
-  <div class="status">
-    <div class="dot loading" id="dot"></div>
-    <span id="statusText">Loading…</span>
-    <span id="count"></span>
+<!-- ══════════════════════════════════
+     ROOMS PAGE
+══════════════════════════════════ -->
+<div class="page" id="page-rooms">
+  <div class="bar">
+    <span class="bar-label">Type</span>
+    <button class="chip on" onclick="toggle(this,'Single')">Single</button>
+    <button class="chip on" onclick="toggle(this,'Double')">Double</button>
+    <button class="chip on" onclick="toggle(this,'Triple')">Triple</button>
+    <div class="bar-sep"></div>
+    <span class="bar-label">Gender</span>
+    <button class="chip on" id="gMale"   onclick="toggleGender(this,'Male')">Male</button>
+    <button class="chip"    id="gFemale" onclick="toggleGender(this,'Female')">Female</button>
+    <button class="chip"    id="gCoed"   onclick="toggleGender(this,'CoEd')">Co-ed</button>
+    <div class="bar-sep"></div>
+    <span class="bar-label">Sort</span>
+    <button class="chip" id="sortBtn" onclick="cycleSort()">Building</button>
+    <div class="bar-sep"></div>
+    <input id="search" type="text" placeholder="Search…" oninput="render()">
+    <button id="refreshBtn" onclick="load()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Refresh
+    </button>
   </div>
-  <div id="container"></div>
-  <div class="footer" id="footer"></div>
-</main>
+  <main>
+    <div class="status">
+      <div class="dot loading" id="dot"></div>
+      <span id="statusText">Loading…</span>
+      <span id="count"></span>
+    </div>
+    <div id="container"></div>
+    <div class="footer" id="footer"></div>
+  </main>
+</div>
 
 <script>
+// ── AREA DEFINITIONS ──────────────────────────────────────────────
+// Each area maps to an areaID from the BU API, plus an optional
+// address range filter {min, max} for Bay State Rd sub-filtering.
+const AREAS = [
+  {
+    id: 'Bay State Rd Dormitories',
+    name: 'Bay State Road',
+    sub: '90–212 Bay State Rd',
+    icon: 'home',
+    filter: u => {
+      const m = u.location.match(/^(\d+)(?:-\d+)?\s+Bay State Road/i);
+      return m && parseInt(m[1]) >= 90 && parseInt(m[1]) <= 212;
+    }
+  },
+  {
+    id: 'Bay State Rd Dormitories',
+    name: 'Bay State Road (All)',
+    sub: 'All Bay State Rd buildings',
+    icon: 'home',
+    filter: () => true
+  },
+  {
+    id: 'Central & East Campus',
+    name: 'Central & East Campus',
+    sub: 'Apts, Dorms, Semi-Suites, Studios',
+    icon: 'building',
+    filter: () => true
+  },
+  {
+    id: 'Large Residences',
+    name: 'Large Residences',
+    sub: 'Warren, Stuvi, Towers, etc.',
+    icon: 'building',
+    filter: () => true
+  },
+  {
+    id: 'South Campus Dormitories',
+    name: 'South Campus',
+    sub: 'South Campus dorms',
+    icon: 'home',
+    filter: () => true
+  },
+  {
+    id: 'Specialty Houses',
+    name: 'Specialty Houses',
+    sub: 'Global, Arts, Engineering & more',
+    icon: 'star',
+    filter: () => true
+  },
+  {
+    id: 'Sth Apts-Beacon,Mountfort',
+    name: 'South Apts – Beacon & Mountfort',
+    sub: 'Apartments',
+    icon: 'apt',
+    filter: () => true
+  },
+  {
+    id: 'Sth Apts-Buswell,Park,Aru',
+    name: 'South Apts – Buswell, Park & Arundel',
+    sub: 'Apartments',
+    icon: 'apt',
+    filter: () => true
+  },
+  {
+    id: 'Student Village',
+    name: 'Student Village',
+    sub: 'StuVi 1 & 2 suites and apartments',
+    icon: 'building',
+    filter: () => true
+  },
+];
+
 const API = 'https://www.bu.edu/housing/wp-admin/admin-ajax.php?action=bu_hau_units_data&timestamp=';
 const PROXIES = [
   u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
@@ -421,164 +363,23 @@ const PROXIES = [
   u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
 ];
 
-// Only show buildings 90–212 Bay State Road
-function inRange(location) {
-  const m = location.match(/^(\d+)(?:-\d+)?\s+Bay State Road/i);
-  if (!m) return false;
-  const n = parseInt(m[1]);
-  return n >= 90 && n <= 212;
-}
+// ── STATE ─────────────────────────────────────────────────────────
+let allData     = null;   // full API response
+let currentArea = null;   // AREAS entry currently viewed
+let areaUnits   = [];     // units for current area (filtered)
+let activeTypes   = new Set(['Single','Double','Triple']);
+let activeGenders = new Set(['Male']);
+let sortMode = 'bld';
 
-let allUnits = [];
-let activeTypes = new Set(['Single','Double','Triple']);
-let sortMode = 'bld'; // bld | rate-asc | rate-desc
+// ── ICONS ─────────────────────────────────────────────────────────
+const ICONS = {
+  home:     `<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`,
+  building: `<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/>`,
+  star:     `<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>`,
+  apt:      `<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>`,
+};
 
-function toggle(btn, type) {
-  if (activeTypes.has(type)) {
-    if (activeTypes.size === 1) return;
-    activeTypes.delete(type);
-    btn.classList.remove('on');
-  } else {
-    activeTypes.add(type);
-    btn.classList.add('on');
-  }
-  render();
-}
-
-function cycleSort() {
-  const btn = document.getElementById('sortBtn');
-  if (sortMode === 'bld') {
-    sortMode = 'rate-asc'; btn.textContent = 'Rate ↑'; btn.classList.add('on');
-  } else if (sortMode === 'rate-asc') {
-    sortMode = 'rate-desc'; btn.textContent = 'Rate ↓';
-  } else {
-    sortMode = 'bld'; btn.textContent = 'Building'; btn.classList.remove('on');
-  }
-  render();
-}
-
-function setStatus(state, text) {
-  document.getElementById('dot').className = 'dot ' + state;
-  document.getElementById('statusText').textContent = text;
-}
-
-function showSkeletons() {
-  document.getElementById('container').innerHTML = Array(3).fill(`
-    <div class="bld" style="margin-bottom:32px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <div class="sl" style="width:160px;height:12px;margin:0;flex:none"></div>
-        <div style="flex:1;height:1px;background:var(--gray2)"></div>
-      </div>
-      <div class="grid">
-        ${Array(5).fill(`<div class="skel">
-          <div class="sl" style="width:50px;height:20px"></div>
-          <div class="sl" style="width:70px;height:7px"></div>
-          <div class="sl" style="width:110px;height:7px"></div>
-          <div class="sl" style="width:90px;height:7px"></div>
-        </div>`).join('')}
-      </div>
-    </div>`).join('');
-}
-
-function parseRate(s) { return parseInt((s||'').replace(/[^0-9]/g,'')) || 0; }
-
-function floorLabel(f) {
-  const n = parseInt(f);
-  if (isNaN(n) || n === 0) return 'Basement';
-  const sfx = ['th','st','nd','rd'];
-  const v = n % 100;
-  return n + (sfx[(v-20)%10] || sfx[v] || sfx[0]) + ' floor';
-}
-
-function updateStats(units) {
-  const avail = units.filter(u => u.gender === 'Male' && u.availableSpaces > 0 && inRange(u.location));
-  const ct = t => avail.reduce((a, u) => a + u.rooms.filter(r => r.roomSize === t && r.availableSpaces > 0).length, 0);
-  document.getElementById('hMale').textContent   = avail.length;
-  document.getElementById('hSingle').textContent = ct('Single');
-  document.getElementById('hDouble').textContent = ct('Double');
-  document.getElementById('hTriple').textContent = ct('Triple');
-}
-
-function render() {
-  const q = document.getElementById('search').value.toLowerCase();
-  let cards = [];
-
-  allUnits.forEach(u => {
-    if (!inRange(u.location)) return;
-    if (u.gender !== 'Male') return;
-    u.rooms.forEach(r => {
-      if (!activeTypes.has(r.roomSize)) return;
-      if (r.availableSpaces === 0) return;
-      if (q && !u.location.toLowerCase().includes(q) && !r.room.toLowerCase().includes(q)) return;
-      cards.push({ unit: u, room: r });
-    });
-  });
-
-  if (sortMode === 'rate-asc') cards.sort((a,b) => parseRate(a.room.rate) - parseRate(b.room.rate));
-  else if (sortMode === 'rate-desc') cards.sort((a,b) => parseRate(b.room.rate) - parseRate(a.room.rate));
-  else cards.sort((a,b) => {
-    const na = parseInt(a.unit.location.match(/^(\d+)/)?.[1]||0);
-    const nb = parseInt(b.unit.location.match(/^(\d+)/)?.[1]||0);
-    return na - nb;
-  });
-
-  document.getElementById('count').textContent =
-    cards.length + ' room' + (cards.length !== 1 ? 's' : '') + ' available';
-
-  if (cards.length === 0) {
-    document.getElementById('container').innerHTML = `
-      <div class="empty">
-        <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-        <h3>No rooms found</h3>
-        <p>Try adjusting the type filters or clearing the search.</p>
-      </div>`;
-    return;
-  }
-
-  const byBld = {};
-  cards.forEach(c => {
-    if (!byBld[c.unit.location]) byBld[c.unit.location] = [];
-    byBld[c.unit.location].push(c);
-  });
-
-  document.getElementById('container').innerHTML = Object.entries(byBld).map(([bld, items]) => `
-    <div class="bld">
-      <div class="bld-head">
-        <div class="bld-name">${bld}</div>
-        <div class="bld-count">${items.length} room${items.length !== 1 ? 's' : ''}</div>
-        <div class="bld-line"></div>
-      </div>
-      <div class="grid">
-        ${items.map(({unit: u, room: r}) => {
-          const tc = 't-' + r.roomSize.toLowerCase();
-          const rate = parseRate(r.rate);
-          const rateStr = rate ? '$' + rate.toLocaleString() + '/yr' : '—';
-          const fp = u.floorplan
-            ? `<a class="fp" href="${u.floorplan.trim()}" target="_blank">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                Floorplan</a>` : '';
-          return `<div class="card">
-            <div class="card-top">
-              <div class="room-num">${r.room}</div>
-              <div class="avail">${r.availableSpaces}/${r.totalSpaces}</div>
-            </div>
-            <div class="floor">${floorLabel(u.floor)}</div>
-            <div class="tags">
-              <span class="tag ${tc}">${r.roomSize}</span>
-              <span class="tag t-male">Male</span>
-              <span class="tag t-type">${u.unitType}</span>
-            </div>
-            <div class="card-footer">
-              <span class="rate">${rateStr}</span>
-              <span class="meal">${u.mealplan ? 'Meal req.' : 'No meal'}</span>
-            </div>
-            ${fp}
-          </div>`;
-        }).join('')}
-      </div>
-    </div>`).join('');
-}
-
+// ── FETCH ─────────────────────────────────────────────────────────
 async function fetchWithFallback(url) {
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
@@ -597,26 +398,270 @@ async function fetchWithFallback(url) {
   throw new Error('All fetch attempts failed');
 }
 
+// ── HOME ─────────────────────────────────────────────────────────
+function goHome() {
+  document.getElementById('page-home').classList.add('active');
+  document.getElementById('page-rooms').classList.remove('active');
+  document.getElementById('headerStats').style.display = 'none';
+  document.getElementById('breadcrumb').innerHTML = `<span class="current">Housing Availability</span>`;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function buildHomeCards() {
+  if (!allData) return;
+  const grid = document.getElementById('areaGrid');
+  grid.innerHTML = AREAS.map((area, idx) => {
+    const apiArea = allData.areas.find(a => a.areaID === area.id);
+    if (!apiArea) return '';
+
+    const units = apiArea.units.filter(area.filter);
+    const maleAvail  = units.filter(u => u.gender === 'Male' && u.availableSpaces > 0).length;
+    const totalAvail = units.filter(u => u.availableSpaces > 0).length;
+
+    const singles = units.reduce((a,u) => a + u.rooms.filter(r=>r.roomSize==='Single'&&r.availableSpaces>0).length,0);
+    const doubles = units.reduce((a,u) => a + u.rooms.filter(r=>r.roomSize==='Double'&&r.availableSpaces>0).length,0);
+    const triples = units.reduce((a,u) => a + u.rooms.filter(r=>r.roomSize==='Triple'&&r.availableSpaces>0).length,0);
+
+    const chips = [
+      { label: `${singles} Single${singles!==1?'s':''}`, ok: singles > 0 },
+      { label: `${doubles} Double${doubles!==1?'s':''}`, ok: doubles > 0 },
+      { label: `${triples} Triple${triples!==1?'s':''}`, ok: triples > 0 },
+    ].map(c => `<span class="avail-chip ${c.ok?'ac-avail':'ac-zero'}">${c.label}</span>`).join('');
+
+    return `<div class="area-card" onclick="openArea(${idx})">
+      <div class="area-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[area.icon]||ICONS.home}</svg>
+      </div>
+      <div class="area-info">
+        <div class="area-name">${area.name}</div>
+        <div class="area-meta">${totalAvail} unit${totalAvail!==1?'s':''} available · ${maleAvail} male</div>
+        <div class="avail-chips">${chips}</div>
+      </div>
+      <div class="area-arrow">›</div>
+    </div>`;
+  }).join('');
+
+  const ts = allData.createTime || '';
+  document.getElementById('homeLabel').textContent = 'Choose a housing area';
+  document.getElementById('homeUpdated').textContent = ts ? `BU last updated: ${ts}` : '';
+}
+
+// ── OPEN AREA ─────────────────────────────────────────────────────
+function openArea(idx) {
+  currentArea = AREAS[idx];
+  const apiArea = allData.areas.find(a => a.areaID === currentArea.id);
+  areaUnits = apiArea ? apiArea.units.filter(currentArea.filter) : [];
+
+  // Reset filters
+  activeTypes   = new Set(['Single','Double','Triple']);
+  activeGenders = new Set(['Male']);
+  sortMode = 'bld';
+  document.querySelectorAll('.chip').forEach(c => {
+    const type = c.textContent.trim();
+    c.classList.toggle('on',
+      ['Single','Double','Triple'].includes(type) ? true :
+      type === 'Male' ? true : false
+    );
+  });
+  document.getElementById('sortBtn').textContent = 'Building';
+  document.getElementById('sortBtn').classList.remove('on');
+  document.getElementById('search').value = '';
+
+  // Update header
+  document.getElementById('breadcrumb').innerHTML =
+    `<span class="crumb" onclick="goHome()">Housing</span>
+     <span class="sep">/</span>
+     <span class="current">${currentArea.name}</span>`;
+  document.getElementById('headerStats').style.display = 'flex';
+
+  document.getElementById('page-home').classList.remove('active');
+  document.getElementById('page-rooms').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  updateHeaderStats();
+  render();
+}
+
+// ── FILTERS ──────────────────────────────────────────────────────
+function toggle(btn, type) {
+  if (activeTypes.has(type)) {
+    if (activeTypes.size === 1) return;
+    activeTypes.delete(type); btn.classList.remove('on');
+  } else {
+    activeTypes.add(type); btn.classList.add('on');
+  }
+  render();
+}
+
+function toggleGender(btn, gender) {
+  if (activeGenders.has(gender)) {
+    if (activeGenders.size === 1) return;
+    activeGenders.delete(gender); btn.classList.remove('on');
+  } else {
+    activeGenders.add(gender); btn.classList.add('on');
+  }
+  render();
+}
+
+function cycleSort() {
+  const btn = document.getElementById('sortBtn');
+  if (sortMode === 'bld') { sortMode='rate-asc'; btn.textContent='Rate ↑'; btn.classList.add('on'); }
+  else if (sortMode === 'rate-asc') { sortMode='rate-desc'; btn.textContent='Rate ↓'; }
+  else { sortMode='bld'; btn.textContent='Building'; btn.classList.remove('on'); }
+  render();
+}
+
+// ── STATS ────────────────────────────────────────────────────────
+function updateHeaderStats() {
+  if (!areaUnits.length) return;
+  const avail = areaUnits.filter(u => u.gender==='Male' && u.availableSpaces>0);
+  const ct = t => avail.reduce((a,u)=>a+u.rooms.filter(r=>r.roomSize===t&&r.availableSpaces>0).length,0);
+  document.getElementById('hMale').textContent   = avail.length;
+  document.getElementById('hSingle').textContent = ct('Single');
+  document.getElementById('hDouble').textContent = ct('Double');
+  document.getElementById('hTriple').textContent = ct('Triple');
+}
+
+// ── RENDER ───────────────────────────────────────────────────────
+function parseRate(s) { return parseInt((s||'').replace(/[^0-9]/g,''))||0; }
+function floorLabel(f) {
+  const n = parseInt(f);
+  if (isNaN(n)||n===0) return 'Basement';
+  const sfx=['th','st','nd','rd'], v=n%100;
+  return n+(sfx[(v-20)%10]||sfx[v]||sfx[0])+' floor';
+}
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase();
+  let cards = [];
+
+  areaUnits.forEach(u => {
+    const genderKey = u.gender === 'CoEd' ? 'CoEd' : u.gender;
+    if (!activeGenders.has(genderKey)) return;
+    u.rooms.forEach(r => {
+      if (!activeTypes.has(r.roomSize)) return;
+      if (r.availableSpaces === 0) return;
+      if (q && !u.location.toLowerCase().includes(q) && !r.room.toLowerCase().includes(q)) return;
+      cards.push({ unit: u, room: r });
+    });
+  });
+
+  if (sortMode==='rate-asc') cards.sort((a,b)=>parseRate(a.room.rate)-parseRate(b.room.rate));
+  else if (sortMode==='rate-desc') cards.sort((a,b)=>parseRate(b.room.rate)-parseRate(a.room.rate));
+  else cards.sort((a,b)=>{
+    const na=parseInt(a.unit.location.match(/^(\d+)/)?.[1]||0);
+    const nb=parseInt(b.unit.location.match(/^(\d+)/)?.[1]||0);
+    return na!==nb ? na-nb : a.unit.location.localeCompare(b.unit.location);
+  });
+
+  document.getElementById('count').textContent =
+    cards.length + ' room'+(cards.length!==1?'s':'')+' available';
+
+  if (cards.length===0) {
+    document.getElementById('container').innerHTML = `
+      <div class="empty">
+        <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <h3>No rooms found</h3>
+        <p>Try adjusting the filters or clearing the search.</p>
+      </div>`;
+    return;
+  }
+
+  const byBld = {};
+  cards.forEach(c => {
+    if (!byBld[c.unit.location]) byBld[c.unit.location] = [];
+    byBld[c.unit.location].push(c);
+  });
+
+  document.getElementById('container').innerHTML = Object.entries(byBld).map(([bld,items])=>`
+    <div class="bld">
+      <div class="bld-head">
+        <div class="bld-name">${bld}</div>
+        <div class="bld-count">${items.length} room${items.length!==1?'s':''}</div>
+        <div class="bld-line"></div>
+      </div>
+      <div class="grid">
+        ${items.map(({unit:u,room:r})=>{
+          const tc='t-'+r.roomSize.toLowerCase();
+          const gc = u.gender==='Male'?'t-male':u.gender==='Female'?'t-female':'t-coed';
+          const gl = u.gender==='CoEd'?'Co-ed':u.gender;
+          const rate=parseRate(r.rate);
+          const rateStr=rate?'$'+rate.toLocaleString()+'/yr':'—';
+          const fp=u.floorplan?`<a class="fp" href="${u.floorplan.trim()}" target="_blank">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Floorplan</a>`:'';
+          return `<div class="card">
+            <div class="card-top">
+              <div class="room-num">${r.room}</div>
+              <div class="avail">${r.availableSpaces}/${r.totalSpaces}</div>
+            </div>
+            <div class="floor">${floorLabel(u.floor)}</div>
+            <div class="tags">
+              <span class="tag ${tc}">${r.roomSize}</span>
+              <span class="tag ${gc}">${gl}</span>
+              <span class="tag t-type">${u.unitType}</span>
+            </div>
+            <div class="card-footer">
+              <span class="rate">${rateStr}</span>
+              <span class="meal">${u.mealplan?'Meal req.':'No meal'}</span>
+            </div>
+            ${fp}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ── LOAD DATA ─────────────────────────────────────────────────────
+function setStatus(state,text){
+  document.getElementById('dot').className='dot '+state;
+  document.getElementById('statusText').textContent=text;
+}
+
+function showSkeletons(){
+  document.getElementById('container').innerHTML=Array(3).fill(`
+    <div class="bld" style="margin-bottom:32px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div class="sl" style="width:160px;height:12px;margin:0;flex:none"></div>
+        <div style="flex:1;height:1px;background:var(--g2)"></div>
+      </div>
+      <div class="grid">
+        ${Array(4).fill(`<div class="skel">
+          <div class="sl" style="width:50px;height:20px"></div>
+          <div class="sl" style="width:70px;height:7px"></div>
+          <div class="sl" style="width:110px;height:7px"></div>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
 async function load() {
   const btn = document.getElementById('refreshBtn');
   btn.disabled = true;
-  setStatus('loading', 'Loading live data from BU Housing…');
+  setStatus('loading','Loading live data from BU Housing…');
   showSkeletons();
   try {
-    const data = await fetchWithFallback(API + Date.now());
-    const bsr = data.areas.find(a => a.areaID === 'Bay State Rd Dormitories');
-    if (!bsr) throw new Error('Bay State Rd not found in response');
-    allUnits = bsr.units;
-    updateStats(allUnits);
-    const ts = data.createTime || new Date().toLocaleString();
+    allData = await fetchWithFallback(API + Date.now());
+    const ts = allData.createTime || new Date().toLocaleString();
     setStatus('live', `Live · BU last updated ${ts}`);
     document.getElementById('footer').innerHTML =
       `Live data from <a href="https://www.bu.edu/housing/assignments/continuing-student/availability/" target="_blank">BU Housing Availability</a> · ` +
       `Updated by BU every 5 min · Fetched ${new Date().toLocaleTimeString()}`;
-    render();
+
+    // If on home, rebuild cards; if on area page, re-render
+    if (document.getElementById('page-home').classList.contains('active')) {
+      buildHomeCards();
+    } else {
+      if (currentArea) {
+        const apiArea = allData.areas.find(a => a.areaID === currentArea.id);
+        areaUnits = apiArea ? apiArea.units.filter(currentArea.filter) : [];
+        updateHeaderStats();
+        render();
+      }
+    }
   } catch(e) {
-    setStatus('error', 'Could not load — ' + e.message);
-    document.getElementById('container').innerHTML = `
+    setStatus('error','Could not load — '+e.message);
+    document.getElementById('container').innerHTML=`
       <div class="empty">
         <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
         <h3>Failed to load</h3>
@@ -627,8 +672,27 @@ async function load() {
   }
 }
 
-setInterval(load, 5 * 60 * 1000);
-load();
+// Initial load — always start on home, fetch data in background
+(async () => {
+  try {
+    allData = await fetchWithFallback(API + Date.now());
+    buildHomeCards();
+    const ts = allData.createTime || '';
+    if (ts) document.getElementById('homeUpdated').textContent = `BU last updated: ${ts}`;
+  } catch(e) {
+    document.getElementById('homeLabel').textContent = 'Could not load data';
+    document.getElementById('areaGrid').innerHTML = `
+      <div class="empty" style="grid-column:1/-1">
+        <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <h3>Failed to load</h3>
+        <p>Reload the page to try again.</p>
+      </div>`;
+  }
+})();
+
+setInterval(async () => {
+  try { allData = await fetchWithFallback(API + Date.now()); buildHomeCards(); } catch {}
+}, 5 * 60 * 1000);
 </script>
 </body>
 </html>
