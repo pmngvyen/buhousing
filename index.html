@@ -404,6 +404,7 @@ function goHome() {
   document.getElementById('page-rooms').classList.remove('active');
   document.getElementById('headerStats').style.display = 'none';
   document.getElementById('breadcrumb').innerHTML = `<span class="current">Housing Availability</span>`;
+  history.replaceState(null, '', '#');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -476,6 +477,7 @@ function openArea(idx) {
 
   document.getElementById('page-home').classList.remove('active');
   document.getElementById('page-rooms').classList.add('active');
+  history.replaceState(null, '', '#area-' + idx);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
   updateHeaderStats();
@@ -677,27 +679,99 @@ async function load() {
   }
 }
 
-// Initial load — always start on home, fetch data in background
-(async () => {
+// ── CACHE KEY ────────────────────────────────────────────────────
+const CACHE_KEY = 'bu_housing_cache';
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function saveCache(data) {
   try {
-    allData = await fetchWithFallback(API + Date.now());
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
+  } catch {}
+}
+
+function loadCache() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if (Date.now() - ts > CACHE_TTL * 6) return null; // expire after 30 min
+    return { data, age: Date.now() - ts };
+  } catch { return null; }
+}
+
+// ── HASH ROUTING ─────────────────────────────────────────────────
+function restoreFromHash() {
+  const hash = window.location.hash;
+  const m = hash.match(/^#area-(\d+)$/);
+  if (m && allData) {
+    const idx = parseInt(m[1]);
+    if (AREAS[idx]) { openArea(idx); return; }
+  }
+  // Default: home
+  goHome();
+}
+
+// ── INITIAL LOAD ─────────────────────────────────────────────────
+(async () => {
+  // Step 1: Show cached data instantly if available
+  const cached = loadCache();
+  if (cached) {
+    allData = cached.data;
     buildHomeCards();
-    const ts = allData.createTime || '';
-    if (ts) document.getElementById('homeUpdated').textContent = `BU last updated: ${ts}`;
+    const ageMin = Math.round(cached.age / 60000);
+    document.getElementById('homeUpdated').textContent =
+      `Cached data · ${ageMin < 1 ? 'just now' : ageMin + ' min ago'} · fetching fresh…`;
+    restoreFromHash();
+  }
+
+  // Step 2: Fetch fresh data in background
+  try {
+    const fresh = await fetchWithFallback(API + Date.now());
+    allData = fresh;
+    saveCache(fresh);
+    buildHomeCards();
+    const ts = fresh.createTime || '';
+    document.getElementById('homeUpdated').textContent = ts ? `BU last updated: ${ts}` : '';
+    // If we're on an area page, re-render with fresh data
+    if (currentArea) {
+      const apiArea = allData.areas.find(a => a.areaID === currentArea.id);
+      areaUnits = apiArea ? apiArea.units.filter(currentArea.filter) : [];
+      updateHeaderStats();
+      render();
+    }
+    // If no cache was available, route from hash now
+    if (!cached) restoreFromHash();
   } catch(e) {
-    document.getElementById('homeLabel').textContent = 'Could not load data';
-    document.getElementById('areaGrid').innerHTML = `
-      <div class="empty" style="grid-column:1/-1">
-        <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-        <h3>Failed to load</h3>
-        <p>Reload the page to try again.</p>
-      </div>`;
+    if (!cached) {
+      document.getElementById('homeLabel').textContent = 'Could not load data';
+      document.getElementById('areaGrid').innerHTML = `
+        <div class="empty" style="grid-column:1/-1">
+          <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <h3>Failed to load</h3>
+          <p>Reload the page to try again.</p>
+        </div>`;
+    }
   }
 })();
 
+// Auto-refresh every 5 minutes
 setInterval(async () => {
-  try { allData = await fetchWithFallback(API + Date.now()); buildHomeCards(); } catch {}
-}, 5 * 60 * 1000);
+  try {
+    const fresh = await fetchWithFallback(API + Date.now());
+    allData = fresh;
+    saveCache(fresh);
+    buildHomeCards();
+    if (currentArea) {
+      const apiArea = allData.areas.find(a => a.areaID === currentArea.id);
+      areaUnits = apiArea ? apiArea.units.filter(currentArea.filter) : [];
+      updateHeaderStats();
+      render();
+    }
+  } catch {}
+}, CACHE_TTL);
+
+// Handle browser back/forward
+window.addEventListener('popstate', () => restoreFromHash());
 </script>
 </body>
 </html>
