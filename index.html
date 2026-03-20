@@ -82,16 +82,16 @@
   .home-content { max-width: 960px; margin: 0 auto; padding: 40px 40px 80px; }
   .home-section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink4); margin-bottom: 14px; }
 
-  .area-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-bottom: 40px; }
+  .area-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; margin-bottom: 40px; }
 
   .area-card {
     background: var(--surface);
     border: 1px solid var(--g2);
     border-radius: var(--r-lg);
-    padding: 20px 22px;
+    padding: 26px 28px;
     cursor: pointer;
     transition: border-color var(--ease), box-shadow var(--ease), transform var(--ease);
-    display: flex; align-items: flex-start; gap: 14px;
+    display: flex; align-items: flex-start; gap: 18px;
   }
   .area-card:hover {
     border-color: var(--red);
@@ -99,14 +99,14 @@
     transform: translateY(-1px);
   }
   .area-icon {
-    width: 36px; height: 36px; border-radius: var(--r); flex-shrink: 0;
+    width: 48px; height: 48px; border-radius: var(--r-lg); flex-shrink: 0;
     background: var(--red-pale); display: flex; align-items: center; justify-content: center;
     border: 1px solid rgba(204,0,0,0.1);
   }
-  .area-icon svg { width: 18px; height: 18px; stroke: var(--red); }
+  .area-icon svg { width: 22px; height: 22px; stroke: var(--red); }
   .area-info { flex: 1; min-width: 0; }
-  .area-name { font-size: 14px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 3px; }
-  .area-meta { font-size: 11px; color: var(--ink3); font-weight: 400; letter-spacing: -0.01em; }
+  .area-name { font-size: 16px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 5px; }
+  .area-meta { font-size: 13px; color: var(--ink3); font-weight: 400; letter-spacing: -0.01em; margin-bottom: 2px; }
   .area-arrow { color: var(--g3); font-size: 16px; margin-left: auto; align-self: center; transition: color var(--ease), transform var(--ease); flex-shrink: 0; }
   .area-card:hover .area-arrow { color: var(--red); transform: translateX(2px); }
 
@@ -114,8 +114,8 @@
   .area-card.loading-card .area-name { color: var(--ink4); }
 
   /* availability chips on home cards */
-  .avail-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
-  .avail-chip { font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 100px; letter-spacing: 0.03em; }
+  .avail-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .avail-chip { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; letter-spacing: 0.02em; }
   .ac-avail { background: #e6f4ed; color: #15653a; }
   .ac-zero  { background: var(--g1); color: var(--ink4); }
 
@@ -215,7 +215,7 @@
     <span class="current">Housing Availability</span>
   </div>
   <div class="header-right" id="headerStats" style="display:none">
-    <div class="hstat"><div class="hstat-num" id="hMale">—</div><div class="hstat-lbl">Male</div></div>
+    <div class="hstat"><div class="hstat-num" id="hMale">—</div><div class="hstat-lbl">Available</div></div>
     <div class="hstat"><div class="hstat-num" id="hSingle">—</div><div class="hstat-lbl">Singles</div></div>
     <div class="hstat"><div class="hstat-num" id="hDouble">—</div><div class="hstat-lbl">Doubles</div></div>
     <div class="hstat"><div class="hstat-num" id="hTriple">—</div><div class="hstat-lbl">Triples</div></div>
@@ -229,7 +229,7 @@
   <div class="home-hero">
     <div class="hero-eyebrow">Boston University · Room Selection 2026–2027</div>
     <div class="hero-title">Find Your Room</div>
-    <div class="hero-sub">Browse available rooms across all BU housing areas · Male singles, doubles &amp; triples</div>
+    <div class="hero-sub">Browse available rooms across all BU housing areas · Singles, doubles &amp; triples</div>
   </div>
   <div class="home-content">
     <div class="home-section-label" id="homeLabel">Loading areas…</div>
@@ -260,8 +260,8 @@
     <div class="bar-sep"></div>
     <span class="bar-label">Gender</span>
     <button class="chip on" id="gMale"   onclick="toggleGender(this,'Male')">Male</button>
-    <button class="chip"    id="gFemale" onclick="toggleGender(this,'Female')">Female</button>
-    <button class="chip"    id="gCoed"   onclick="toggleGender(this,'CoEd')">Co-ed</button>
+    <button class="chip on" id="gFemale" onclick="toggleGender(this,'Female')">Female</button>
+    <button class="chip on" id="gCoed"   onclick="toggleGender(this,'CoEd')">Co-ed</button>
     <div class="bar-sep"></div>
     <span class="bar-label">Sort</span>
     <button class="chip" id="sortBtn" onclick="cycleSort()">Building</button>
@@ -368,7 +368,7 @@ let allData     = null;   // full API response
 let currentArea = null;   // AREAS entry currently viewed
 let areaUnits   = [];     // units for current area (filtered)
 let activeTypes   = new Set(['Single','Double','Triple']);
-let activeGenders = new Set(['Male']);
+let activeGenders = new Set(['Male','Female','CoEd']);
 let sortMode = 'bld';
 
 // ── ICONS ─────────────────────────────────────────────────────────
@@ -415,7 +415,7 @@ function buildHomeCards() {
     if (!apiArea) return '';
 
     const units = apiArea.units.filter(area.filter);
-    const maleAvail  = units.filter(u => u.gender === 'Male' && u.availableSpaces > 0).length;
+    const maleAvail  = units.filter(u => u.availableSpaces > 0).length;
     const totalAvail = units.filter(u => u.availableSpaces > 0).length;
 
     const singles = units.reduce((a,u) => a + u.rooms.filter(r=>r.roomSize==='Single'&&r.availableSpaces>0).length,0);
@@ -434,7 +434,7 @@ function buildHomeCards() {
       </div>
       <div class="area-info">
         <div class="area-name">${area.name}</div>
-        <div class="area-meta">${totalAvail} unit${totalAvail!==1?'s':''} available · ${maleAvail} male</div>
+        <div class="area-meta">${totalAvail} unit${totalAvail!==1?'s':''} available</div>
         <div class="avail-chips">${chips}</div>
       </div>
       <div class="area-arrow">›</div>
@@ -454,13 +454,13 @@ function openArea(idx) {
 
   // Reset filters
   activeTypes   = new Set(['Single','Double','Triple']);
-  activeGenders = new Set(['Male']);
+  activeGenders = new Set(['Male','Female','CoEd']);
   sortMode = 'bld';
   document.querySelectorAll('.chip').forEach(c => {
     const type = c.textContent.trim();
     c.classList.toggle('on',
       ['Single','Double','Triple'].includes(type) ? true :
-      type === 'Male' ? true : false
+      ['Male','Female','CoEd'].includes(type) || ['Single','Double','Triple'].includes(type) ? true : false
     );
   });
   document.getElementById('sortBtn').textContent = 'Building';
@@ -514,7 +514,7 @@ function cycleSort() {
 // ── STATS ────────────────────────────────────────────────────────
 function updateHeaderStats() {
   if (!areaUnits.length) return;
-  const avail = areaUnits.filter(u => u.gender==='Male' && u.availableSpaces>0);
+  const avail = areaUnits.filter(u => u.availableSpaces>0);
   const ct = t => avail.reduce((a,u)=>a+u.rooms.filter(r=>r.roomSize===t&&r.availableSpaces>0).length,0);
   document.getElementById('hMale').textContent   = avail.length;
   document.getElementById('hSingle').textContent = ct('Single');
