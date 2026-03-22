@@ -232,7 +232,7 @@
   <div class="home-hero">
     <div class="hero-eyebrow">Boston University · Room Selection 2026–2027</div>
     <div class="hero-title">Find Your Room</div>
-    <div class="hero-sub">Browse available rooms across all BU housing areas</div>
+    <div class="hero-sub">Browse available rooms across all BU housing areas · Singles, doubles &amp; triples</div>
   </div>
   <div class="home-content">
     <div class="home-section-label" id="homeLabel"><span class="loading-pulse">Fetching live availability…</span></div>
@@ -695,8 +695,43 @@ function render() {
           const gl = u.gender==='CoEd'?'Co-ed':u.gender;
           const rate=parseRate(r.rate);
           const rateStr=rate?'$'+rate.toLocaleString()+'/yr':'—';
-          const fpUrl = (u.floorplan || '').replace(/\\r\\n|\\r|\\n|[\r\n\s]+/g, '').replace(/^http:\/\//, 'https://');
-          const fp = fpUrl ? `<a class="fp" href="${fpUrl}" target="_blank" rel="noopener"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Floorplan</a>` : '';
+          const fpRaw = (u.floorplan || '').replace(/\\r\\n|\\r|\\n|[\r\n\s]+/g, '').replace(/^http:\/\//, 'https://');
+          const fpId = fpRaw ? 'fp-' + Math.random().toString(36).slice(2) : '';
+          const fp = fpRaw ? `<a class="fp" id="${fpId}" href="${fpRaw}" target="_blank" rel="noopener" style="display:none"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Floorplan</a>` : '';
+          if (fpRaw) {
+            // BU has stale URLs in their DB. Build a list of candidate URLs to try:
+            // replace year/month folder with known good ones, and strip "-page-0" suffixes
+            const fpCandidates = (url => {
+              const clean = url.replace(/-page-0+(\.\w+)$/, '$1')  // remove -page-0 suffix
+                               .replace(/-page-001(\.\w+)$/, '$1'); // remove -page-001 suffix
+              const filename = clean.split('/').pop();
+              return [
+                clean,
+                // Try known working year/month prefixes
+                'https://www.bu.edu/housing/files/2020/04/' + filename,
+                'https://www.bu.edu/housing/files/2020/01/' + filename,
+                'https://www.bu.edu/housing/files/2019/09/' + filename,
+                'https://www.bu.edu/housing/files/2019/01/' + filename,
+                'https://www.bu.edu/housing/files/2018/01/' + filename,
+                'https://www.bu.edu/housing/files/2015/04/' + filename,
+                'https://www.bu.edu/housing/files/2014/09/' + filename,
+                'https://www.bu.edu/housing/files/2014/04/' + filename,
+                'https://www.bu.edu/housing/files/2014/03/' + filename,
+              ].filter((v, i, a) => a.indexOf(v) === i); // dedupe
+            })(fpRaw);
+
+            // Try each candidate in order, show link with first that loads
+            (function tryNext(i) {
+              if (i >= fpCandidates.length) return; // all failed, link stays hidden
+              const img = new Image();
+              img.onload = () => {
+                const el = document.getElementById(fpId);
+                if (el) { el.href = fpCandidates[i]; el.style.display = 'inline-flex'; }
+              };
+              img.onerror = () => tryNext(i + 1);
+              img.src = fpCandidates[i];
+            })(0);
+          }
           // If room label is just a single letter (e.g. "A", "B"), build a combined label
           // e.g. suite "0315" + room "A" → "315-A", suite "B-01" + room "A" → "B-01A"
           const roomLabel = /^[A-Za-z]$/.test(r.room.trim())
