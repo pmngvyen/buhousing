@@ -385,15 +385,15 @@
     </div>
     <div class="bar-row">
       <span class="bar-label">Unit</span>
-      <button class="chip on" onclick="toggleUnit(this,'Dorm')">Dorm</button>
-      <button class="chip on" onclick="toggleUnit(this,'Suite')">Suite</button>
-      <button class="chip on" onclick="toggleUnit(this,'Semi-Suite')">Semi-Suite</button>
-      <button class="chip on" onclick="toggleUnit(this,'Apt')">Apt</button>
-      <button class="chip on" onclick="toggleUnit(this,'Studio')">Studio</button>
+      <button class="chip on" data-unit="Dorm" onclick="toggleUnit(this)">Dorm</button>
+      <button class="chip on" data-unit="Suite" onclick="toggleUnit(this)">Suite</button>
+      <button class="chip on" data-unit="Semi-Suite" onclick="toggleUnit(this)">Semi-Suite</button>
+      <button class="chip on" data-unit="Apt" onclick="toggleUnit(this)">Apt</button>
+      <button class="chip on" data-unit="Studio" onclick="toggleUnit(this)">Studio</button>
       <div class="bar-sep"></div>
       <span class="bar-label">Meal Plan</span>
-      <button class="chip on" onclick="toggleMeal(this,'required')">Required</button>
-      <button class="chip on" onclick="toggleMeal(this,'none')">Not Required</button>
+      <button class="chip on" data-meal="required" onclick="toggleMeal(this)">Meal Req.</button>
+      <button class="chip on" data-meal="none" onclick="toggleMeal(this)">No Meal</button>
     </div>
   </div>
   <main>
@@ -586,6 +586,9 @@ function openArea(idx) {
   activeGenders  = new Set(['Male','Female','CoEd']);
   activeUnits    = new Set(['Dorm','Suite','Semi-Suite','Apt','Studio']);
   activeMeal     = new Set(['required','none']);
+  // Re-sync all chip button visual states
+  document.querySelectorAll('.chip[data-unit]').forEach(b => b.classList.add('on'));
+  document.querySelectorAll('.chip[data-meal]').forEach(b => b.classList.add('on'));
   sortMode = 'bld';
   document.querySelectorAll('.chip').forEach(c => {
     const type = c.textContent.trim();
@@ -635,7 +638,9 @@ function toggleGender(btn, gender) {
   render();
 }
 
-function toggleUnit(btn, unit) {
+function toggleUnit(btn) {
+  const unit = btn.dataset.unit;
+  if (!unit) return;
   if (activeUnits.has(unit)) {
     if (activeUnits.size === 1) return;
     activeUnits.delete(unit); btn.classList.remove('on');
@@ -645,7 +650,9 @@ function toggleUnit(btn, unit) {
   render();
 }
 
-function toggleMeal(btn, meal) {
+function toggleMeal(btn) {
+  const meal = btn.dataset.meal;
+  if (!meal) return;
   if (activeMeal.has(meal)) {
     if (activeMeal.size === 1) return;
     activeMeal.delete(meal); btn.classList.remove('on');
@@ -695,7 +702,7 @@ function render() {
     const unitKey = u.unitType === 'Apartment' ? 'Apt' : u.unitType;
     if (!activeUnits.has(unitKey)) return;
     // Meal plan filter
-    const mealKey = u.mealplan ? 'required' : 'none';
+    const mealKey = (u.mealplan === true || u.mealplan === 1 || u.mealplan === 'true') ? 'required' : 'none';
     if (!activeMeal.has(mealKey)) return;
     u.rooms.forEach(r => {
       if (!activeTypes.has(r.roomSize)) return;
