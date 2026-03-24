@@ -212,7 +212,112 @@
   .sl { height: 9px; border-radius: 4px; margin-bottom: 8px; background: linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%); background-size: 200% 100%; animation: sh 1.4s ease-in-out infinite; }
   @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-  .footer { text-align: center; font-size: 11px; color: var(--ink4); margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--g2); line-height: 1.8; }
+  /* ── WATCH BUTTON ON CARDS ── */
+  .watch-btn {
+    position: absolute; top: 12px; left: 12px;
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 1px solid var(--g2); background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all var(--ease); z-index: 2;
+    color: var(--ink4);
+  }
+  .watch-btn:hover { border-color: var(--red); color: var(--red); }
+  .watch-btn.watching { background: var(--red); border-color: var(--red); color: var(--white); }
+  .watch-btn svg { width: 13px; height: 13px; }
+
+  /* ── WATCHLIST NAV BUTTON IN HEADER ── */
+  .watch-nav {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--r); padding: 5px 12px; cursor: pointer;
+    transition: all var(--ease); white-space: nowrap; position: relative;
+    margin-left: 12px;
+  }
+  .watch-nav:hover { background: rgba(255,255,255,0.2); }
+  .watch-nav svg { width: 14px; height: 14px; }
+  .watch-badge {
+    position: absolute; top: -5px; right: -5px;
+    min-width: 17px; height: 17px; border-radius: 100px;
+    background: #ffcc00; color: #000; font-size: 9px; font-weight: 700;
+    display: none; align-items: center; justify-content: center;
+    padding: 0 4px; border: 2px solid var(--red);
+  }
+  .watch-badge.visible { display: flex; }
+
+  /* ── WATCHLIST PAGE ── */
+  .wl-hero {
+    background: var(--red); padding: 36px 40px 32px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .wl-hero-text h2 { font-size: 24px; font-weight: 700; color: var(--white); letter-spacing: -0.03em; margin-bottom: 4px; }
+  .wl-hero-text p  { font-size: 13px; color: rgba(255,255,255,0.65); }
+  .wl-hero-icon { width: 48px; height: 48px; background: rgba(255,255,255,0.15); border-radius: var(--r-lg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .wl-hero-icon svg { width: 24px; height: 24px; stroke: white; }
+
+  .wl-main { max-width: 1160px; margin: 0 auto; padding: 28px 40px 80px; }
+
+  .wl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 10px; }
+
+  .wl-card {
+    background: var(--surface); border: 1px solid var(--g2);
+    border-radius: var(--r-lg); padding: 16px; position: relative;
+  }
+  .wl-card.wl-available { border-color: #1a8a38; box-shadow: 0 0 0 3px rgba(26,138,56,0.1); }
+  .wl-card.wl-gone      { border-color: var(--g2); opacity: 0.55; }
+
+  .wl-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 600; padding: 3px 8px;
+    border-radius: 100px; margin-bottom: 10px; letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .wl-status.available { background: #e6f4ed; color: #15653a; }
+  .wl-status.gone      { background: var(--g1); color: var(--ink4); }
+  .wl-status.unknown   { background: var(--g1); color: var(--ink4); }
+  .wl-status-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+  .wl-room   { font-size: 22px; font-weight: 700; letter-spacing: -0.04em; color: var(--ink); }
+  .wl-bld    { font-size: 11px; color: var(--ink3); margin-top: 1px; margin-bottom: 10px; }
+  .wl-tags   { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 10px; }
+  .wl-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--g1); }
+  .wl-rate   { font-size: 11px; font-weight: 600; color: var(--ink); }
+  .wl-added  { font-size: 10px; color: var(--ink4); }
+
+  .wl-remove {
+    position: absolute; top: 12px; right: 12px;
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 1px solid var(--g2); background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--ink4); transition: all var(--ease);
+  }
+  .wl-remove:hover { border-color: var(--red); color: var(--red); background: var(--red-pale); }
+  .wl-remove svg { width: 11px; height: 11px; }
+
+  .wl-empty { text-align: center; padding: 80px 20px; }
+  .wl-empty-ico { width: 56px; height: 56px; background: var(--red-pale); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+  .wl-empty-ico svg { width: 26px; height: 26px; stroke: var(--red); }
+  .wl-empty h3 { font-size: 16px; font-weight: 600; color: var(--ink2); margin-bottom: 6px; letter-spacing: -0.02em; }
+  .wl-empty p  { font-size: 13px; color: var(--ink3); line-height: 1.6; }
+
+  .wl-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+  .wl-toolbar-stat { font-size: 12px; color: var(--ink3); }
+  .wl-toolbar-stat strong { color: var(--ink); font-weight: 600; }
+  .wl-clear-btn {
+    margin-left: auto; font-size: 12px; font-weight: 500;
+    padding: 5px 12px; border-radius: var(--r);
+    border: 1px solid var(--g2); background: transparent;
+    color: var(--ink3); cursor: pointer; transition: all var(--ease);
+  }
+  .wl-clear-btn:hover { border-color: var(--red); color: var(--red); }
+
+  @media(max-width:640px){
+    .wl-hero { padding: 20px; }
+    .wl-main { padding: 20px 16px 60px; }
+    .watch-nav span { display: none; }
+  }
+
+    .footer { text-align: center; font-size: 11px; color: var(--ink4); margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--g2); line-height: 1.8; }
   .footer a { color: var(--red); text-decoration: none; }
   .footer a:hover { text-decoration: underline; }
 
@@ -234,6 +339,11 @@
   <div class="breadcrumb" id="breadcrumb">
     <span class="current">Housing Availability</span>
   </div>
+  <button class="watch-nav" onclick="goWatchlist()" title="My Watchlist">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+    <span>Watchlist</span>
+    <div class="watch-badge" id="watchBadge"></div>
+  </button>
   <div class="header-right" id="headerStats" style="display:none">
     <div class="hstat"><div class="hstat-num" id="hMale">—</div><div class="hstat-lbl">Available</div></div>
     <div class="hstat"><div class="hstat-num" id="hSingle">—</div><div class="hstat-lbl">Singles</div></div>
@@ -418,6 +528,28 @@
   </main>
 </div>
 
+<!-- ══════════════════════════════════
+     WATCHLIST PAGE
+══════════════════════════════════ -->
+<div class="page" id="page-watchlist">
+  <div class="wl-hero">
+    <div class="wl-hero-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+    </div>
+    <div class="wl-hero-text">
+      <h2>My Watchlist</h2>
+      <p>Saved rooms are checked for availability every 5 minutes. You'll see their live status here.</p>
+    </div>
+  </div>
+  <div class="wl-main">
+    <div class="wl-toolbar">
+      <div class="wl-toolbar-stat" id="wlStat"></div>
+      <button class="wl-clear-btn" onclick="clearWatchlist()">Clear all</button>
+    </div>
+    <div id="wlContainer"></div>
+  </div>
+</div>
+
 <script>
 // ── AREA DEFINITIONS ──────────────────────────────────────────────
 // Each area maps to an areaID from the BU API, plus an optional
@@ -543,10 +675,203 @@ async function fetchWithFallback(url) {
   throw new Error('All fetch attempts failed');
 }
 
+// ── WATCHLIST ─────────────────────────────────────────────────────
+const WL_KEY = 'bu_housing_watchlist';
+
+function loadWatchlist() {
+  try { return JSON.parse(localStorage.getItem(WL_KEY) || '[]'); } catch { return []; }
+}
+
+function saveWatchlist(list) {
+  try { localStorage.setItem(WL_KEY, JSON.stringify(list)); } catch {}
+}
+
+// Build a unique key for a room: location + suite + roomID
+function roomKey(u, r) {
+  return `${u.location}||${u.suite}||${r.roomID}`;
+}
+
+function isWatching(u, r) {
+  return loadWatchlist().some(w => w.key === roomKey(u, r));
+}
+
+function toggleWatch(u, r, btn) {
+  let list = loadWatchlist();
+  const key = roomKey(u, r);
+  const idx = list.findIndex(w => w.key === key);
+  if (idx >= 0) {
+    list.splice(idx, 1);
+    btn.classList.remove('watching');
+    btn.title = 'Save to watchlist';
+  } else {
+    const rate = parseInt((r.rate||'').replace(/[^0-9]/g,''))||0;
+    list.push({
+      key,
+      location: u.location,
+      suite:    u.suite,
+      roomID:   r.roomID,
+      room:     r.room,
+      roomSize: r.roomSize,
+      gender:   u.gender,
+      unitType: u.unitType,
+      floor:    u.floor,
+      rate:     r.rate || '—',
+      mealplan: u.mealplan,
+      addedAt:  Date.now(),
+      status:   r.availableSpaces > 0 ? 'available' : 'gone',
+      spaces:   r.availableSpaces,
+      total:    r.totalSpaces,
+    });
+    btn.classList.add('watching');
+    btn.title = 'Remove from watchlist';
+  }
+  saveWatchlist(list);
+  updateWatchBadge();
+  // If watchlist page is open, re-render it
+  if (document.getElementById('page-watchlist').classList.contains('active')) {
+    renderWatchlist();
+  }
+}
+
+function updateWatchBadge() {
+  const list = loadWatchlist();
+  const badge = document.getElementById('watchBadge');
+  if (!badge) return;
+  if (list.length > 0) {
+    badge.textContent = list.length;
+    badge.classList.add('visible');
+  } else {
+    badge.classList.remove('visible');
+  }
+}
+
+function goWatchlist() {
+  document.getElementById('page-home').classList.remove('active');
+  document.getElementById('page-rooms').classList.remove('active');
+  document.getElementById('page-watchlist').classList.add('active');
+  document.getElementById('headerStats').style.display = 'none';
+  document.getElementById('breadcrumb').innerHTML =
+    `<span class="crumb" onclick="goHome()">Housing</span>
+     <span class="sep">/</span>
+     <span class="current">Watchlist</span>`;
+  history.replaceState(null, '', '#watchlist');
+  renderWatchlist();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function clearWatchlist() {
+  if (!confirm('Remove all saved rooms?')) return;
+  saveWatchlist([]);
+  updateWatchBadge();
+  renderWatchlist();
+}
+
+function removeFromWatchlist(key) {
+  let list = loadWatchlist().filter(w => w.key !== key);
+  saveWatchlist(list);
+  updateWatchBadge();
+  renderWatchlist();
+  // Update any visible watch buttons in the rooms page
+  document.querySelectorAll('.watch-btn').forEach(btn => {
+    if (btn.dataset.key === key) {
+      btn.classList.remove('watching');
+      btn.title = 'Save to watchlist';
+    }
+  });
+}
+
+function renderWatchlist() {
+  const list = loadWatchlist();
+  const container = document.getElementById('wlContainer');
+  const stat = document.getElementById('wlStat');
+  if (!container) return;
+
+  if (list.length === 0) {
+    stat.innerHTML = '';
+    container.innerHTML = `
+      <div class="wl-empty">
+        <div class="wl-empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></div>
+        <h3>No saved rooms yet</h3>
+        <p>Browse housing areas and click the bookmark icon on any room card to save it here.</p>
+      </div>`;
+    return;
+  }
+
+  const avail  = list.filter(w => w.status === 'available').length;
+  const gone   = list.filter(w => w.status === 'gone').length;
+  stat.innerHTML = `<strong>${list.length}</strong> saved · <strong style="color:#15653a">${avail}</strong> available · <strong style="color:var(--ink4)">${gone}</strong> unavailable`;
+
+  container.innerHTML = `<div class="wl-grid">${list.map(w => {
+    const statusClass = w.status === 'available' ? 'available' : 'gone';
+    const statusLabel = w.status === 'available' ? 'Available' : 'Not Available';
+    const cardClass   = w.status === 'available' ? 'wl-available' : 'wl-gone';
+    const tc = 't-' + (w.roomSize||'').toLowerCase();
+    const gc = w.gender==='Male'?'t-male':w.gender==='Female'?'t-female':'t-coed';
+    const gl = w.gender==='CoEd'?'Co-ed':w.gender;
+    const added = new Date(w.addedAt).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    const roomLabel = /^[A-Za-z]$/.test((w.room||'').trim())
+      ? w.suite.replace(/^0+/,'').replace(/-$/,'') + '-' + w.room.trim().toUpperCase()
+      : (w.room||'').replace(/^0+/,'') || w.room;
+    const spaces = w.status === 'available' ? `${w.spaces}/${w.total} open` : 'Full';
+
+    return `<div class="wl-card ${cardClass}">
+      <button class="wl-remove" onclick="removeFromWatchlist('${w.key.replace(/'/g,"\'")}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="wl-status ${statusClass}">
+        <div class="wl-status-dot"></div>${statusLabel} · ${spaces}
+      </div>
+      <div class="wl-room">${roomLabel}</div>
+      <div class="wl-bld">${w.location} · ${floorLabel(w.floor)}</div>
+      <div class="wl-tags">
+        <span class="tag ${tc}">${w.roomSize}</span>
+        <span class="tag ${gc}">${gl}</span>
+        <span class="tag t-type">${w.unitType}</span>
+      </div>
+      <div class="wl-footer">
+        <span class="wl-rate">${w.rate}/yr</span>
+        <span class="wl-added">Saved ${added}</span>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// Update watchlist statuses from fresh API data
+function refreshWatchlistStatuses() {
+  if (!allData) return;
+  let list = loadWatchlist();
+  if (!list.length) return;
+
+  const allUnits = allData.areas.flatMap(a => a.units);
+  let changed = false;
+
+  list = list.map(w => {
+    const unit = allUnits.find(u => u.location === w.location && u.suite === w.suite);
+    if (!unit) return w;
+    const room = unit.rooms.find(r => r.roomID === w.roomID);
+    if (!room) return w;
+    const newStatus = room.availableSpaces > 0 ? 'available' : 'gone';
+    if (newStatus !== w.status || room.availableSpaces !== w.spaces) {
+      changed = true;
+      return { ...w, status: newStatus, spaces: room.availableSpaces, total: room.totalSpaces };
+    }
+    return w;
+  });
+
+  if (changed) {
+    saveWatchlist(list);
+    updateWatchBadge();
+    if (document.getElementById('page-watchlist').classList.contains('active')) {
+      renderWatchlist();
+    }
+  }
+}
+
 // ── HOME ─────────────────────────────────────────────────────────
 function goHome() {
   document.getElementById('page-home').classList.add('active');
   document.getElementById('page-rooms').classList.remove('active');
+  document.getElementById('page-watchlist').classList.remove('active');
   document.getElementById('headerStats').style.display = 'none';
   document.getElementById('breadcrumb').innerHTML = `<span class="current">Housing Availability</span>`;
   history.replaceState(null, '', '#');
@@ -660,6 +985,7 @@ function openArea(idx) {
 
   document.getElementById('page-home').classList.remove('active');
   document.getElementById('page-rooms').classList.add('active');
+  document.getElementById('page-watchlist').classList.remove('active');
   history.replaceState(null, '', '#area-' + idx);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -845,8 +1171,15 @@ function render() {
           const roomLabel = /^[A-Za-z]$/.test(r.room.trim())
             ? u.suite.replace(/^0+/, '').replace(/-$/, '') + '-' + r.room.trim().toUpperCase()
             : r.room.replace(/^0+/, '') || r.room;
+          const wKey = roomKey(u, r);
+          const wActive = isWatching(u, r);
           return `<div class="card">
-            <div class="card-top">
+            <button class="watch-btn ${wActive?'watching':''}" data-key="${wKey}"
+              title="${wActive?'Remove from watchlist':'Save to watchlist'}"
+              onclick="toggleWatch(${JSON.stringify(u)}, ${JSON.stringify(r)}, this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+            </button>
+            <div class="card-top" style="padding-left:30px">
               <div class="room-num">${roomLabel}</div>
               <div class="avail">${r.availableSpaces}/${r.totalSpaces}</div>
             </div>
@@ -950,12 +1283,12 @@ function loadCache() {
 // ── HASH ROUTING ─────────────────────────────────────────────────
 function restoreFromHash() {
   const hash = window.location.hash;
+  if (hash === '#watchlist') { goWatchlist(); return; }
   const m = hash.match(/^#area-(\d+)$/);
   if (m && allData) {
     const idx = parseInt(m[1]);
     if (AREAS[idx]) { openArea(idx); return; }
   }
-  // Default: home
   goHome();
 }
 
@@ -978,6 +1311,7 @@ function restoreFromHash() {
     allData = fresh;
     saveCache(fresh);
     buildHomeCards();
+    refreshWatchlistStatuses();
     const ts = fresh.createTime || '';
     document.getElementById('homeUpdated').textContent = ts ? `BU last updated: ${ts}` : '';
     // If we're on an area page, re-render with fresh data
@@ -1007,6 +1341,8 @@ function restoreFromHash() {
 })();
 
 // Auto-refresh every 5 minutes
+updateWatchBadge();
+
 setInterval(async () => {
   try {
     const fresh = await fetchWithFallback(API + Date.now());
