@@ -695,6 +695,34 @@ function isWatching(u, r) {
   return loadWatchlist().some(w => w.key === roomKey(u, r));
 }
 
+function toggleWatchByKey(btn) {
+  const key = btn.dataset.key;
+
+  let foundU = null;
+  let foundR = null;
+
+  // IMPORTANT: this assumes your loaded data is stored in `allData`
+  if (!allData || !allData.areas) return;
+
+  for (const area of allData.areas) {
+    for (const u of area.units || []) {
+      for (const r of u.rooms || []) {
+        if (roomKey(u, r) === key) {
+          foundU = u;
+          foundR = r;
+          break;
+        }
+      }
+      if (foundU) break;
+    }
+    if (foundU) break;
+  }
+
+  if (!foundU || !foundR) return;
+
+  toggleWatch(foundU, foundR, btn);
+}
+
 function toggleWatch(u, r, btn) {
   let list = loadWatchlist();
   const key = roomKey(u, r);
@@ -1176,7 +1204,7 @@ function render() {
           return `<div class="card">
             <button class="watch-btn ${wActive?'watching':''}" data-key="${wKey}"
               title="${wActive?'Remove from watchlist':'Save to watchlist'}"
-              onclick="toggleWatch(${JSON.stringify(u)}, ${JSON.stringify(r)}, this)">
+              onclick="toggleWatchByKey(this)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
             </button>
             <div class="card-top" style="padding-left:30px">
