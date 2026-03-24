@@ -587,18 +587,21 @@ function openArea(idx) {
   activeUnits    = new Set(['Dorm','Suite','Semi-Suite','Apt','Studio']);
   activeMeal     = new Set(['required','none']);
   // Re-sync all chip button visual states
-  document.querySelectorAll('.chip[data-unit]').forEach(b => b.classList.add('on'));
-  document.querySelectorAll('.chip[data-meal]').forEach(b => b.classList.add('on'));
   sortMode = 'bld';
+  // Reset all chips by their data attributes or text — explicit and unambiguous
   document.querySelectorAll('.chip').forEach(c => {
     const type = c.textContent.trim();
-    c.classList.toggle('on',
-      ['Single','Double','Triple'].includes(type) ? true :
-      ['Male','Female','CoEd','Dorm','Suite','Semi-Suite','Apt','Studio','required','none'].includes(type) || ['Single','Double','Triple','Quad'].includes(type) ? true : false
-    );
+    const isTypeChip   = ['Single','Double','Triple','Quad'].includes(type);
+    const isGenderChip = ['Male','Female','Co-ed'].includes(type);
+    const isUnitChip   = c.dataset.unit !== undefined;
+    const isMealChip   = c.dataset.meal !== undefined;
+    const isSortChip   = c.id === 'sortBtn';
+    if (isSortChip)   { c.classList.remove('on'); return; }
+    if (isTypeChip || isGenderChip || isUnitChip || isMealChip) {
+      c.classList.add('on');
+    }
   });
   document.getElementById('sortBtn').textContent = 'Building';
-  document.getElementById('sortBtn').classList.remove('on');
   document.getElementById('search').value = '';
 
   // Update header
