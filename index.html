@@ -129,9 +129,16 @@
   ══════════════════════════════════ */
   .bar {
     background: var(--surface); border-bottom: 1px solid var(--g2);
-    height: 62px; display: flex; align-items: center; padding: 0 40px; gap: 10px;
+    display: flex; flex-direction: column; padding: 0 40px;
     position: sticky; top: 56px; z-index: 100;
     box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+  }
+  .bar-row {
+    display: flex; align-items: center; gap: 10px;
+    height: 52px; flex-wrap: nowrap;
+  }
+  .bar-row + .bar-row {
+    border-top: 1px solid var(--g2);
   }
   .bar-sep { width: 1px; height: 24px; background: var(--g2); flex-shrink: 0; margin: 0 6px; }
   .bar-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink4); flex-shrink: 0; }
@@ -203,7 +210,7 @@
     .header-right { display: none; }
     .home-hero { padding: 36px 20px 32px; }
     .home-content { padding: 28px 16px 60px; }
-    .bar { padding: 0 16px; height: auto; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+    .bar { padding: 0 16px; } .bar-row { flex-wrap: wrap; height: auto; padding: 6px 0; gap: 6px; }
     main { padding: 20px 16px 60px; }
   }
 </style>
@@ -355,25 +362,39 @@
 ══════════════════════════════════ -->
 <div class="page" id="page-rooms">
   <div class="bar">
-    <span class="bar-label">Type</span>
-    <button class="chip on" onclick="toggle(this,'Single')">Single</button>
-    <button class="chip on" onclick="toggle(this,'Double')">Double</button>
-    <button class="chip on" onclick="toggle(this,'Triple')">Triple</button>
-    <button class="chip on" onclick="toggle(this,'Quad')">Quad</button>
-    <div class="bar-sep"></div>
-    <span class="bar-label">Gender</span>
-    <button class="chip on" id="gMale"   onclick="toggleGender(this,'Male')">Male</button>
-    <button class="chip on" id="gFemale" onclick="toggleGender(this,'Female')">Female</button>
-    <button class="chip on" id="gCoed"   onclick="toggleGender(this,'CoEd')">Co-ed</button>
-    <div class="bar-sep"></div>
-    <span class="bar-label">Sort</span>
-    <button class="chip" id="sortBtn" onclick="cycleSort()">Building</button>
-    <div class="bar-sep"></div>
-    <input id="search" type="text" placeholder="Search…" oninput="render()">
-    <button id="refreshBtn" onclick="load()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      Refresh
-    </button>
+    <div class="bar-row">
+      <span class="bar-label">Type</span>
+      <button class="chip on" onclick="toggle(this,'Single')">Single</button>
+      <button class="chip on" onclick="toggle(this,'Double')">Double</button>
+      <button class="chip on" onclick="toggle(this,'Triple')">Triple</button>
+      <button class="chip on" onclick="toggle(this,'Quad')">Quad</button>
+      <div class="bar-sep"></div>
+      <span class="bar-label">Gender</span>
+      <button class="chip on" id="gMale"   onclick="toggleGender(this,'Male')">Male</button>
+      <button class="chip on" id="gFemale" onclick="toggleGender(this,'Female')">Female</button>
+      <button class="chip on" id="gCoed"   onclick="toggleGender(this,'CoEd')">Co-ed</button>
+      <div class="bar-sep"></div>
+      <span class="bar-label">Sort</span>
+      <button class="chip" id="sortBtn" onclick="cycleSort()">Building</button>
+      <div class="bar-sep"></div>
+      <input id="search" type="text" placeholder="Search…" oninput="render()">
+      <button id="refreshBtn" onclick="load()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Refresh
+      </button>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Unit</span>
+      <button class="chip on" onclick="toggleUnit(this,'Dorm')">Dorm</button>
+      <button class="chip on" onclick="toggleUnit(this,'Suite')">Suite</button>
+      <button class="chip on" onclick="toggleUnit(this,'Semi-Suite')">Semi-Suite</button>
+      <button class="chip on" onclick="toggleUnit(this,'Apt')">Apt</button>
+      <button class="chip on" onclick="toggleUnit(this,'Studio')">Studio</button>
+      <div class="bar-sep"></div>
+      <span class="bar-label">Meal Plan</span>
+      <button class="chip on" onclick="toggleMeal(this,'required')">Required</button>
+      <button class="chip on" onclick="toggleMeal(this,'none')">Not Required</button>
+    </div>
   </div>
   <main>
     <div class="status">
@@ -471,7 +492,9 @@ let allData     = null;   // full API response
 let currentArea = null;   // AREAS entry currently viewed
 let areaUnits   = [];     // units for current area (filtered)
 let activeTypes   = new Set(['Single','Double','Triple','Quad']);
-let activeGenders = new Set(['Male','Female','CoEd']);
+let activeGenders  = new Set(['Male','Female','CoEd']);
+let activeUnits    = new Set(['Dorm','Suite','Semi-Suite','Apt','Studio']);
+let activeMeal     = new Set(['required','none']);
 let sortMode = 'bld';
 
 // ── ICONS ─────────────────────────────────────────────────────────
@@ -560,13 +583,15 @@ function openArea(idx) {
 
   // Reset filters
   activeTypes   = new Set(['Single','Double','Triple','Quad']);
-  activeGenders = new Set(['Male','Female','CoEd']);
+  activeGenders  = new Set(['Male','Female','CoEd']);
+  activeUnits    = new Set(['Dorm','Suite','Semi-Suite','Apt','Studio']);
+  activeMeal     = new Set(['required','none']);
   sortMode = 'bld';
   document.querySelectorAll('.chip').forEach(c => {
     const type = c.textContent.trim();
     c.classList.toggle('on',
       ['Single','Double','Triple'].includes(type) ? true :
-      ['Male','Female','CoEd'].includes(type) || ['Single','Double','Triple','Quad'].includes(type) ? true : false
+      ['Male','Female','CoEd','Dorm','Suite','Semi-Suite','Apt','Studio','required','none'].includes(type) || ['Single','Double','Triple','Quad'].includes(type) ? true : false
     );
   });
   document.getElementById('sortBtn').textContent = 'Building';
@@ -610,6 +635,26 @@ function toggleGender(btn, gender) {
   render();
 }
 
+function toggleUnit(btn, unit) {
+  if (activeUnits.has(unit)) {
+    if (activeUnits.size === 1) return;
+    activeUnits.delete(unit); btn.classList.remove('on');
+  } else {
+    activeUnits.add(unit); btn.classList.add('on');
+  }
+  render();
+}
+
+function toggleMeal(btn, meal) {
+  if (activeMeal.has(meal)) {
+    if (activeMeal.size === 1) return;
+    activeMeal.delete(meal); btn.classList.remove('on');
+  } else {
+    activeMeal.add(meal); btn.classList.add('on');
+  }
+  render();
+}
+
 function cycleSort() {
   const btn = document.getElementById('sortBtn');
   if (sortMode === 'bld') { sortMode='rate-asc'; btn.textContent='Rate ↑'; btn.classList.add('on'); }
@@ -646,6 +691,12 @@ function render() {
   areaUnits.forEach(u => {
     const genderKey = u.gender === 'CoEd' ? 'CoEd' : u.gender;
     if (!activeGenders.has(genderKey)) return;
+    // Unit type filter — map API unitType to our filter keys
+    const unitKey = u.unitType === 'Apartment' ? 'Apt' : u.unitType;
+    if (!activeUnits.has(unitKey)) return;
+    // Meal plan filter
+    const mealKey = u.mealplan ? 'required' : 'none';
+    if (!activeMeal.has(mealKey)) return;
     u.rooms.forEach(r => {
       if (!activeTypes.has(r.roomSize)) return;
       if (r.availableSpaces === 0) return;
