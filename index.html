@@ -332,13 +332,21 @@
 
   /* ── PAYWALL MODAL ── */
   .paywall-overlay {
-    display: none;
+    display: flex;
     position: fixed; inset: 0; z-index: 9999;
     background: rgba(0,0,0,0.55);
     backdrop-filter: blur(4px);
     align-items: center; justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
   }
-  .paywall-overlay.active { display: flex; }
+  .paywall-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
 
   .paywall-modal {
     background: var(--surface);
@@ -1588,7 +1596,8 @@ function paywallDecline() {
         </button>
       </div>
       <div class="paywall-fine">
-        lmao
+        * This is a joke. This website is free and always will be.
+        Please don't actually give anyone $2,500.
       </div>
     </div>
   </div>
